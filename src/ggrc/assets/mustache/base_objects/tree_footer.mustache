@@ -46,7 +46,11 @@
         data-join-object-type="{{parent_instance.class.shortName}}"
         data-exclude-option-types="{{exclude_option_types}}"
         data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
-        data-object-params='{{#if_instance_of parent_instance "Section"}}{ "section": { "id": {{parent_instance.id}}, "title": "{{json_escape parent_instance.title}}", "description": "{{json_escape parent_instance.description}}" } }{{/if_instance_of}}'>
+        {{#if_instance_of parent_instance "Section"}}
+        data-object-params='{ "section": { "id": {{parent_instance.id}}, "title": "{{json_escape parent_instance.title}}", "description": "{{json_escape parent_instance.description}}" } }'
+        {{else}}
+        data-object-params=''
+        {{/if_instance_of}}>
         + Object
       </a>
       {{#if_instance_of parent_instance "Section"}}
