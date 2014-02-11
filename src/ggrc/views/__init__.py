@@ -524,7 +524,7 @@ def import_requests(audit_id):
     file_msg = "Could not import: invalid csv file."
     return render_template("programs/import_request_errors.haml", exception_message=file_msg)
   parameters = {"dry_run": dry_run, "csv_file": csv_file.read(), "csv_filename": filename, "audit_id": audit_id, "program_id": program.id, "return_to": return_to}
-  tq = create_task("import_request", import_request_task, parameters)
+  tq = create_task("import_request", import_request_task, parameters, audit.context_id)
   return tq.make_response(import_dump({"id": tq.id, "status": tq.status}))
 
 @app.route("/audits/<audit_id>/import_pbc_template", methods=['GET'])
