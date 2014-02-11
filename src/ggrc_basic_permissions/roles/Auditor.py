@@ -50,6 +50,7 @@ permissions = {
         "Document",
         "Meeting",
         "UserRole",
+        "Task",
     ],
     "create": [
         "Request",
