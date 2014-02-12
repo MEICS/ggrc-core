@@ -11,6 +11,7 @@
 (function(can, $){
 
 var COLLAPSE = "collapse"
+, LHN_SIZE = "lhn_size"
 , SORTS = "sorts"
 , HEIGHTS = "heights"
 , COLUMNS = "columns"
@@ -107,6 +108,21 @@ can.Model.LocalStorage("CMS.Models.DisplayPrefs", {
     }
 
     return widget_id ? collapsed.attr(widget_id) : collapsed;
+  }
+  
+  , setLHNavSize : function(page_id, widget_id, size) {
+    this.makeObject(page_id === null ? page_id : path, LHN_SIZE).attr(widget_id, size);
+    this.autoupdate && this.save();
+    return this;
+  }
+
+  , getLHNavSize : function(page_id, widget_id) {
+    var size = this.getObject(page_id === null ? page_id : path, LHN_SIZE);
+    if(!size) {
+      size = this.makeObject(page_id === null ? page_id : path, LHN_SIZE).attr(this.makeObject(LHN_SIZE, page_id).serialize());
+    }
+
+    return widget_id ? size.attr(widget_id) : size;
   }
 
   , setGlobal : function(widget_id, attrs) {
@@ -205,7 +221,7 @@ can.Model.LocalStorage("CMS.Models.DisplayPrefs", {
 
   , setPageAsDefault : function(page_id) {
     var that = this;
-    can.each([COLLAPSE, SORTS, HEIGHTS, COLUMNS], function(key) {
+    can.each([COLLAPSE, LHN_SIZE, SORTS, HEIGHTS, COLUMNS], function(key) {
       that.makeObject(key).attr(page_id, new can.Observe(that.makeObject(path, key).serialize()));
     });
     this.save();

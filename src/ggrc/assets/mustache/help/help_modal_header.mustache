@@ -6,12 +6,12 @@
 }}
 
 {{!div class="modal-header"}}
+  {{#allow_help_edit}}
+    <a class="btn btn-mini pull-right help-edit" data-toggle='collapse' href='#helpedit' title="Edit Help" rel="tooltip" data-placement="left">
+      <i class="grcicon-edit"></i>
+    </a>
+  {{/allow_help_edit}}
   {{#instance.content}}
-    {{#allow_help_edit}}
-      <a class="btn btn-mini pull-right help-edit" data-toggle='collapse' href='#helpedit' title="Edit Help" rel="tooltip" data-placement="left">
-        <i class="grcicon-edit"></i>
-      </a>
-    {{/allow_help_edit}}
     <span>{{instance.title}}</span>
     {{^instance.title}}
       <span>

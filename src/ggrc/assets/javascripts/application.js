@@ -46,6 +46,16 @@ GGRC.register_hook = function(path, hook) {
   h.push(hook);
 };
 
+GGRC.current_url_compute = can.compute(function() {
+  var path = window.location.pathname
+  , fragment = window.location.hash;
+  return window.encodeURIComponent(path + fragment);
+});
+
+$(window).on('hashchange', function() {
+  GGRC.current_url_compute(window.location);
+});
+
 jQuery.migrateMute = true; //turn off console warnings for jQuery-migrate
 
 function ModelError(message, data) {
@@ -147,6 +157,9 @@ jQuery.extend(GGRC, {
       , "section_objective" : CMS.Models.SectionObjective
       , "person" : CMS.Models.Person
       , "role" : CMS.Models.Role
+      , "threat" : CMS.Models.Threat
+      , "vulnerability" : CMS.Models.Vulnerability
+      , "template" : CMS.Models.Template
     };
 
     function resolve_by_key(subtree, data) {
@@ -240,7 +253,7 @@ $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
     jqXHR.setRequestHeader("If-Unmodified-Since", (etags[originalOptions.url] || [])[1]);
     options.data = options.type.toUpperCase() === "DELETE" ? "" : JSON.stringify(data);
     for(var i in data) {
-      if(data.hasOwnProperty(i) && data[i].provisional_id) {
+      if(data.hasOwnProperty(i) && data[i] && data[i].provisional_id) {
         attach_provisional_id(i);
       }
     }
@@ -458,7 +471,10 @@ jQuery(document).ready(function($) {
         .sticky_popover($.extend({}, defaults, { 
           trigger: 'sticky-hover' 
           , placement : function() {
-            if(this.$element.closest(".widget-area:first-child").length)
+            var $el = this.$element
+              , space = $(document).width() - ($el.offset().left + $el.width());
+            // Display on right if there is enough space
+            if($el.closest(".widget-area:first-child").length && space > 420)
               return "right";
             else
               return "left";
@@ -487,7 +503,7 @@ jQuery(document).ready(function($) {
   });
 
   // Contract/Expand widget
-  $('body').on('click', '.widget .header .showhide, .widget .header .widget-showhide a', function(e) {
+  $('body').on('click', '.widget .header .showhide', function(e) {
 
     if($(this).is(".widget-showhide"))
       e.preventDefault();
@@ -846,6 +862,17 @@ $(window).load(function(){
       setTimeout(addingTabindex,100)
     });
   });
+  
+  // Prevent link popup in code mode
+  $('body').on('click', 'a[data-wysihtml5-command=popupCreateLink]', function(e){
+    var $this = $(this);
+    if($this.hasClass('disabled')){
+      // The button is disabled, close the modal immediately
+      $('body').find('.bootstrap-wysihtml5-insert-link-modal').modal('hide');
+      $this.closest('.wysiwyg-area').find('textarea').focus()
+    }
+  });
+
   // Watermark trigger
   $('body').on('click', '.watermark-trigger', function() {
     var $this = $(this),
@@ -889,7 +916,8 @@ jQuery(function($){
     
     this.each(function() {
       var $that = $(this)
-      , editor = $that.data("wysihtml5").editor;
+      , editor = $that.data("wysihtml5").editor
+      , $textarea = $(editor.textarea.element);
 
       if($that.data("cms_events_bound"))
         return;
@@ -906,8 +934,9 @@ jQuery(function($){
       }).bind("resizestop", function(ev) {
         ev.stopPropagation();
         $that.css({"display" : "block", "height" : $that.height() + 20}); //10px offset between reported height and styled height.
+        $textarea.css('width', $textarea.width()+20);
         editor.composer.style();// re-copy new size of textarea to composer
-        $that.css("display", "none");
+        editor.fire('change_view', editor.currentView.name)
       });
       var $sandbox = $wysiarea.find(".wysihtml5-sandbox");
 

@@ -109,7 +109,7 @@ can.Control("GGRC.Controllers.Modals", {
         // Ensure that the input.change event still occurs
         change : function(event, ui) {
           if(!$(event.target).parents(document.body).length)
-            console.log("FOO!");
+            console.warn("autocomplete menu change event is coming from detached nodes");
           $(event.target).trigger("change");
         }
 
@@ -158,9 +158,12 @@ can.Control("GGRC.Controllers.Modals", {
     });
     acs.each(function(i, ac) {
       ac._renderMenu = function(ul, items) {
-        var model = CMS.Models[ac.element.data("lookup")] || GGRC.Models[ac.element.data("lookup")]
-        can.view.render(GGRC.mustache_path + '/' + model.table_plural + '/autocomplete_result.mustache', items, function(frag) {
+        var model_class = ac.element.data("lookup")
+          , model = CMS.Models[model_class] || GGRC.Models[model_class]
+          ;
+        can.view.render(GGRC.mustache_path + '/' + model.table_plural + '/autocomplete_result.mustache', {model_class: model_class, items: items}, function(frag) {
           $(ul).html(frag);
+          can.view.hookup(ul);
         });
       };
     });
@@ -172,6 +175,7 @@ can.Control("GGRC.Controllers.Modals", {
       var path = el.attr("name").split(".")
         , instance = this.options.instance
         , index = 0
+        , that = this
         ;
 
       path.pop();
@@ -186,6 +190,15 @@ can.Control("GGRC.Controllers.Modals", {
       else {
         path = path.join(".");
         this.options.instance.attr(path, ui.item.stub());
+        // Make sure person name/email gets written to the input field
+        setTimeout(function(){
+          if(el.val() === ""){
+            var obj = that.options.instance.attr(path);
+            if(obj.type === "Person"){
+              el.val(CMS.Models[obj.type].cache[obj.id].name || CMS.Models[obj.type].cache[obj.id].email);
+            }
+          }
+        }, 150);
       }
     } else {
       original_event = event;
@@ -242,7 +255,9 @@ can.Control("GGRC.Controllers.Modals", {
               return that.options.instance;
             }
           }).done(function() {
-            that.on(); //listen to instance.
+            // Check if modal was closed
+            if(that.element !== null)
+              that.on(); //listen to instance.
           });
     } else {
       this.options.attr("instance", new can.Observe(params));
@@ -355,7 +370,7 @@ can.Control("GGRC.Controllers.Modals", {
         instance.mark_for_deletion($elem.data("binding"), CMS.Models.get_instance(model, opt.value));
       });
       if(value.push) {
-        can.each(value, can.proxy(instance, "mark_for_addition", $elem.data("binding")));
+        can.each(value, $.proxy(instance, "mark_for_addition", $elem.data("binding")));
       } else {
         instance.mark_for_addition($elem.data("binding"), value);
       }
@@ -412,8 +427,8 @@ can.Control("GGRC.Controllers.Modals", {
 
   , "[data-before], [data-after] change" : function(el, ev) {
     var start_date = el.datepicker('getDate');
-    this.element.find("[name=" + el.data("before") + "]").datepicker().datepicker("option", "minDate", start_date);
-    this.element.find("[name=" + el.data("after") + "]").datepicker().datepicker("option", "maxDate", start_date);
+    this.element.find("[name=" + el.data("before") + "]").datepicker({changeMonth: true, changeYear: true}).datepicker("option", "minDate", start_date);
+    this.element.find("[name=" + el.data("after") + "]").datepicker({changeMonth: true, changeYear: true}).datepicker("option", "maxDate", start_date);
   }
 
   , "{$footer} a.btn[data-toggle='modal-submit'] click" : function(el, ev) {
@@ -432,14 +447,8 @@ can.Control("GGRC.Controllers.Modals", {
       if (!instance.context)
         instance.attr('context', { id: null });
       // FIXME: This should not depend on presence of `<model>.attributes`
-      if (instance.isNew() && instance.constructor.attributes.owners
-          && (!instance.owners || instance.owners.length == 0)) {
-        // Do not add an owner to a private program. Ownership is managed
-        // through role assignment for private programs.
-        if (!(instance instanceof CMS.Models.Program) || !instance.private)
-        {
-          instance.attr('owners', [{ id: GGRC.current_user.id }]);
-        }
+      if (instance.isNew()) {
+        instance.set_owner_to_current_user_if_unset();
       }
 
       ajd = instance.save().done(function(obj) {
@@ -455,8 +464,7 @@ can.Control("GGRC.Controllers.Modals", {
             , section: CMS.Models.Section.findInCacheById(params.section.id)
             , context: { id: null }
           }).save().done(finish);
-        }
-        else {
+        } else {
           finish();
         }
       }).fail(function(xhr, status) {
@@ -478,7 +486,6 @@ can.Control("GGRC.Controllers.Modals", {
       });
     }
   }
-
   , " ajax:flash" : function(el, ev, mesg) {
     var that = this;
     this.options.$content.find(".flash").length || that.options.$content.prepend("<div class='flash'>");

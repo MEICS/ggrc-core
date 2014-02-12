@@ -6,35 +6,36 @@
 
 <div class="lhs-nav emphesized">
   <ul class="top-level">
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Program" li_class="programs" tooltip_view='/programs/extended_info.mustache'}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Audit" li_class="programs" tooltip_view='/audits/extended_info.mustache' template_view='/static/mustache/audits/search_result.mustache' beta=1}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Program" li_class="programs" tooltip_view='/programs/extended_info.mustache'}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Audit" li_class="programs" tooltip_view='/audits/extended_info.mustache' template_view='/static/mustache/audits/search_result.mustache' beta=1}}}
   </ul>
 </div>
 <div class="lhs-nav">
   <h2 class="governance">Governance</h2>
   <ul class="top-level">
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Regulation" li_class="governance"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Contract" li_class="governance"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Policy" li_class="governance"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Standard" li_class="governance"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Objective" li_class="governance"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Control" li_class="governance"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Regulation" li_class="governance"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Contract" li_class="governance"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Policy" li_class="governance"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Standard" li_class="governance"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Objective" li_class="objectives"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Control" li_class="controls"}}}
   </ul>
   <h2 class="entities">People/Groups</h2>
   <ul class="top-level">
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Person" li_class="entities"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="OrgGroup" li_class="entities"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Person" li_class="entities"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="OrgGroup" li_class="entities"}}}
   </ul>
   <h2 class="business">Assets/Business</h2>
   <ul class="top-level">
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="System" li_class="business"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Process" li_class="business"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="DataAsset" li_class="business"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Product" li_class="business"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Project" li_class="business"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Facility" li_class="business"}}}
-    {{{render '/static/mustache/dashboard/lhn_search.mustache' type="Market" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="System" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Process" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="DataAsset" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Product" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Project" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Facility" li_class="business"}}}
+    {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Market" li_class="business"}}}
   </ul>
+  {{{render_hooks 'LHN.Sections'}}}
 </div>
 <div class="bar-h"></div>
 <div class="lhs-nav recent">

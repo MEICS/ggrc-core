@@ -49,7 +49,9 @@ class Revision(Base, db.Model):
     if 'display_name' not in self.content:
       return ''
     display_name = self.content['display_name']
-    if u'<->' in display_name:
+    if not display_name:
+      result = u"{0} {1}".format(self.resource_type, self.action)
+    elif u'<->' in display_name:
       #TODO: Fix too many values to unpack below
       source, destination = display_name.split('<->')[:2]
       if self.resource_type in link_objects:

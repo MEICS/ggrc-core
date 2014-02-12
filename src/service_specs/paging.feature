@@ -78,8 +78,6 @@ Feature: Collections can be paged
       | Product            |
       | Project            |
       | Program            |
-      | Risk               |
-      | RiskyAttribute     |
       | Section            |
       | System             |
       | Process            |

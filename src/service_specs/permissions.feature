@@ -49,7 +49,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Control            |
       | ControlCategory    |
       | ControlAssertion   |
-      | ControlRisk        |
       | DataAsset          |
       #| Directive          |
       | Contract           |
@@ -71,9 +70,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Project            |
       #| Program            |
       #| ProgramDirective   |
-      | Risk               |
-      | RiskyAttribute     |
-      | RiskRiskyAttribute |
       | Section            |
       | SectionObjective   |
       | System             |
@@ -127,7 +123,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Control            |
       | ControlCategory    |
       | ControlAssertion   |
-      | ControlRisk        |
       | DataAsset          |
       #| Directive          |
       | Contract           |
@@ -149,9 +144,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Project            |
       #| Program            |
       #| ProgramDirective   |
-      | Risk               |
-      | RiskyAttribute     |
-      | RiskRiskyAttribute |
       | Section            |
       | SectionObjective   |
       | System             |
@@ -215,7 +207,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Control            |
       | ControlCategory    |
       | ControlAssertion   |
-      | ControlRisk        |
       | DataAsset          |
       #| Directive          |
       | Contract           |
@@ -237,9 +228,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Project            |
       #| Program            |
       #| ProgramDirective   |
-      | Risk               |
-      | RiskyAttribute     |
-      | RiskRiskyAttribute |
       | Section            |
       | SectionObjective   |
       | System             |
@@ -305,7 +293,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Control            |
       | ControlCategory    |
       | ControlAssertion   |
-      | ControlRisk        |
       | DataAsset          |
       #| Directive          |
       | Contract           |
@@ -327,9 +314,6 @@ Feature: RBAC Permissions enforcement for REST API
       | Project            |
       #FIXME programs can have special behavior | Program            |
       #| ProgramDirective   |
-      | Risk               |
-      | RiskyAttribute     |
-      | RiskRiskyAttribute |
       | Section            |
       | SectionObjective   |
       | System             |

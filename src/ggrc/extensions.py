@@ -23,7 +23,7 @@ def get_extension_modules(modules=[]):
     else:
       for m in settings.EXTENSIONS:
         modules.append(get_extension_module(m))
-  if modules[0] is None:
+  if len(modules) == 0 or modules[0] is None:
     return []
   else:
     return modules

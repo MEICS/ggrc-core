@@ -25,12 +25,16 @@
           &nbsp;
         </div>
         <div class="span4">
-          <div class="pull-right">
-            <a class="btn btn-add" href="javascript://" data-toggle="modal-ajax-form" data-modal-class="modal-wide" data-object-singular="{{related_model_singular}}" data-object-plural="{{related_table_plural}}">
-              <i class="grcicon-add"></i>
-              {{ new_object_title }}
-            </a>
-          </div>
+          {{#if_equals related_model_singular 'Person'}}
+            &nbsp;
+          {{else}}
+            <div class="pull-right">
+              <a class="btn btn-add" href="javascript://" data-toggle="modal-ajax-form" data-modal-class="modal-wide" data-object-singular="{{related_model_singular}}" data-object-plural="{{related_table_plural}}">
+                <i class="grcicon-add"></i>
+                {{ new_object_title }}
+              </a>
+            </div>
+          {{/if_equals}}
         </div>
       </div>
     </div>

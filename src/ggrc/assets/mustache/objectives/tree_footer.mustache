@@ -6,7 +6,7 @@
 }}
 
 {{#if allow_mapping_or_creating}}
-{{#if_match parent_instance.constructor.shortName '^(Directive|Regulation|Policy|Standard|Contract)$'}}
+{{#if_instance_of parent_instance 'Directive|Regulation|Policy|Standard|Contract'}}
 {{#if allow_creating}}
 {{#is_allowed 'create' model.shortName context=null}}
 <li class="tree-footer tree-item tree-item-add">
@@ -24,8 +24,8 @@
           data-join-mapping="{{mapping}}"
           data-join-option-type="{{model.shortName}}"
           data-join-object-id="{{parent_instance.id}}"
-          data-join-object-type="{{parent_instance.constructor.shortName}}"
-          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.constructor.title_singular 'Object'}}">
+          data-join-object-type="{{parent_instance.class.shortName}}"
+          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
           <i class="grcicon-add-black"></i>
           Objective
         </a>
@@ -65,8 +65,8 @@
         data-join-mapping="{{mapping}}"
         data-join-option-type="{{model.shortName}}"
         data-join-object-id="{{parent_instance.id}}"
-        data-join-object-type="{{parent_instance.constructor.shortName}}"
-        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.constructor.title_singular 'Object'}}">
+        data-join-object-type="{{parent_instance.class.shortName}}"
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
         + Objective
       </a>
     </div>
@@ -74,5 +74,5 @@
 </li>
 {{/is_allowed_to_map}}
 {{/if}}
-{{/if_match}}
+{{/if_instance_of}}
 {{/if}}

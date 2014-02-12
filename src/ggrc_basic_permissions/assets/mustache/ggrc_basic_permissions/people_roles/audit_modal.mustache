@@ -24,7 +24,17 @@
             Choose Auditor
             <span class="required">*</span>
           </label>
-          <input tabindex="3" class="input-block-level" name="auditor.email" data-lookup="Person" placeholder="Enter email address" type="text" value="{{firstexist auditor.email ''}}" />
+          <i class="grcicon-person-green pull-left icon-field"></i>
+          {{! `with_auditors` requires `authorizations` mapping, so preload it }}
+          {{#with_mapping 'authorizations' instance}}
+          {{#with_auditors instance}}
+            {{#using auditor=auditors.0.person}}
+            <input tabindex="10" type="text" name="auditor.email" data-lookup="Person" class="span8" value="{{auditor.email}}">
+            {{/using}}
+          {{else}}
+            <input tabindex="10" type="text" name="auditor.email" data-lookup="Person" class="span8" value="">
+          {{/with_auditors instance}}
+          {{/with_mapping 'authorizations' instance}}
           <p><small><em><strong>NOTE:</strong> Auditor will be able to: add, edit and update PBC Requests and PBC Responses; to view Evidence and to view Audit Info.</em></small></p>
         </div>
         </div>

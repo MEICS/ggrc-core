@@ -4,7 +4,7 @@
     Created By: brad@reciprocitylabs.com
     Maintained By: brad@reciprocitylabs.com
 }}
-<div class="advanced-filters pbc-filters extra-header" style="display: none;" {{ (el) -> el.ggrc_controllers_tree_filter() }}>
+<li class="advanced-filters pbc-filters extra-header" style="display: none;" {{ (el) -> el.ggrc_controllers_tree_filter() }}>
   <form>
     <div class="row-fluid">
       <div class="span4">
@@ -22,8 +22,8 @@
       <div class="span2">
         <span class="pull-left request-type">type:</span>
         <select name="request_type" class="span6 short-field">
-          {{#iterate " " "Documentation" "Interview" "Population Sample"}}
-          <option value="{{firstnonempty iterator.toLowerCase}}" {{#iterator.toLowerCase}}{{#trim}}{{#if_equals this states.request_type}}selected="true"{{/trim}}{{/iterator.toLowerCase}}{{/if_equals}}>{{firstnonempty iterator "Any"}}</option>
+          {{#iterate "" "Documentation" "Interview" "Population Sample"}}
+          <option value="{{iterator.toLowerCase}}" {{#iterator.toLowerCase}}{{#trim}}{{#if_equals this states.request_type}}selected="true"{{/trim}}{{/iterator.toLowerCase}}{{/if_equals}}>{{firstnonempty iterator "Any"}}</option>
           {{/iterate}}
         </select>
       </div>
@@ -43,4 +43,4 @@
       </div>
     </div>
   </form>
-</div>
+</li>

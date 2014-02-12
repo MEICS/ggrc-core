@@ -42,8 +42,6 @@ Feature: String and Text column HTML sanitization
       #| DocumentationResponse     | title, description |
       #| InterviewResponse         | title, description |
       #| PopulationSampleResponse  | title, description |
-      | Risk              | residual_risk, description, impact, title, trigger, preconditions, risk_mitigation, likelihood, kind, threat_vector, inherent_risk |
-      | RiskyAttribute    | title, type_string, description |
       | Section           | title, description, notes |
       | System            | title, version, description, notes |
       | Process           | title, version, description, notes |

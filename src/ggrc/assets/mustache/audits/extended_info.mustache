@@ -3,7 +3,7 @@
   <div class="row-fluid">
     <div class="span12">
       {{#using program=instance.program}}
-        <a class="main-title {{instance.constructor.category}} oneline" href="{{program.viewLink}}#audit_widget">
+        <a class="main-title {{instance.class.category}} oneline" href="{{program.viewLink}}#audit_widget">
           {{instance.title}}
           <i class="grcicon-goto"></i>
         </a>
@@ -80,7 +80,7 @@
     <div class="row-fluid">
       <div class="span12">
         {{#using program=instance.program}}
-          <a class="secondary oneline {{instance.constructor.category}}" href="{{program.viewLink}}#audit_widget">
+          <a class="secondary oneline {{instance.class.category}}" href="{{program.viewLink}}#audit_widget">
             View {{instance.title}}
           </a>
         {{/using}}

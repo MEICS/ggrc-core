@@ -80,7 +80,8 @@
   </li>
 {{/list}}
 </ul>
-{{#is_allowed_to_map parent_instance.constructor.shortName model.title_singular}}
+{{!#is_allowed_to_map parent_instance.class.shortName model.title_singular}}
+{{#is_allowed_to_map parent_instance.stub.type model.title_singular}}
   {{#is_related}}
     <ul class="new-tree">
       <li class="tree-item tree-item-add">
@@ -91,7 +92,7 @@
         data-toggle="modal-relationship-selector"
         data-modal-class="modal-wide"
         data-modal-reset="reset"
-        data-original-title="Map {{model.title_singular}} to this {{parent_instance.constructor.shortName}}"
+        data-original-title="Map {{model.title_singular}} to this {{parent_instance.class.shortName}}"
         data-related-model="{{model.model_singular}}"
         data-related-title-singular="{{model.title_singular}}"
         data-related-title-plural="{{model.title_plural}}"

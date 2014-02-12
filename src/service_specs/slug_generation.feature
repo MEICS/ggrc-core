@@ -33,8 +33,6 @@ Feature: Slugs should be generated when not provided
       | Product        |
       | Program        |
       | Project        |
-      | Risk           |
-      | RiskyAttribute |
       | Section        |
       | System         |
 
@@ -80,8 +78,6 @@ Feature: Slugs should be generated when not provided
       | Product        |
       | Program        |
       | Project        |
-      | Risk           |
-      | RiskyAttribute |
       | Section        |
       | System         |
 

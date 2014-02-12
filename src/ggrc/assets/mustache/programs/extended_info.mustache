@@ -8,7 +8,7 @@
 {{!div class="extended"}}
   <div class="row-fluid">
     <div class="span12">
-      <a class="main-title {{constructor.category}} oneline" href="{{viewLink}}">
+      <a class="main-title {{class.category}} oneline" href="{{viewLink}}">
         {{title}}
         {{#is_private}}
           <i class="grcicon-private" rel="tooltip" title="Private"></i>
@@ -76,14 +76,14 @@
     <div class="row-fluid">
       <div class="span6">
         <a class="secondary" href="{{viewLink}}">
-          View {{constructor.title_singular}}
+          View {{class.title_singular}}
         </a>
       </div>
       <div class="span6">
       {{#with_page_object_as 'page_object'}}
-        {{#is_allowed_to_map page_object this join=true}}
+        {{#is_allowed_to_map page_object instance join=true}}
         <a class="primary map-to-page-object" href="javascript://">
-          Map to this {{page_object.constructor.title_singular.toLowerCase}}
+          Map to this {{#page_object.class.title_singular}}{{toLowerCase}}{{/page_object.class.title_singular}}
           <i class="grcicon-reg-map"></i>
         </a>
         {{/is_allowed_to_map}}

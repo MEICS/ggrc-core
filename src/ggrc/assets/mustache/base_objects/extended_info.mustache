@@ -9,7 +9,7 @@
   <div class="row-fluid">
     <div class="span12">
       {{#if_equals instance.constructor.table_singular 'person'}}
-        <a class="main-title {{constructor.category}} oneline" href="{{viewLink}}">
+        <a class="main-title {{class.category}} oneline" href="{{viewLink}}">
           {{name}}
           {{#is_private}}
             <i class="grcicon-private" rel="tooltip" title="Private"></i>
@@ -17,7 +17,7 @@
           <i class="grcicon-goto"></i>
         </a>
       {{else}}
-        <a class="main-title {{constructor.category}} oneline" href="{{viewLink}}">
+        <a class="main-title {{class.category}} oneline" href="{{viewLink}}">
           {{title}}
           {{#is_private}}
             <i class="grcicon-private" rel="tooltip" title="Private"></i>
@@ -29,7 +29,7 @@
   </div>
   <div class="row-fluid">
     <div class="span12">
-      {{^if_equals instance.constructor.table_singular 'person'}}
+      {{^if_equals instance.class.table_singular 'person'}}
         <div class="rtf">
           <p>
             {{{firstnonempty description '<i>No description</i>'}}}
@@ -45,11 +45,11 @@
         {{/if_null}}
       {{/if_equals}}
       
-      {{#if_equals instance.constructor.table_singular 'person'}}
+      {{#if_equals instance.class.table_singular 'person'}}
         <div class="extended-info-contact">
           <div class="row-fluid">
             <div class="span6">
-              {{#if email.length}}
+              {{#if email}}
                 <p>
                   <strong>Email: </strong>
                   <br>
@@ -72,12 +72,6 @@
                   <br>
                   {{company}}
                 </p>
-              {{else}}
-                <p>
-                  <strong>Company: </strong>
-                  <br>
-                  <span class="error">No Company</span>
-                </p>
               {{/if}}
             </div>
           </div>
@@ -86,7 +80,7 @@
     </div>
   </div>
 
-  {{^if_equals instance.constructor.table_singular 'person'}}
+  {{^if_equals instance.class.table_singular 'person'}}
     <div class="extended-info-contact">
       {{{render '/static/mustache/base_objects/contacts.mustache' instance=instance}}}
     </div>
@@ -120,7 +114,7 @@
       {{/visibility_delay}}
     </div>
   </div>
-  {{^if_equals instance.constructor.table_singular 'person'}}
+  {{^if_equals instance.class.table_singular 'person'}}
     <div class="row-fluid">
       <div class="span12">
         <div class="code">
@@ -133,16 +127,18 @@
     <div class="row-fluid">
       <div class="span6">
         <a class="secondary" href="{{viewLink}}">
-          View {{constructor.title_singular}}
+          View {{class.title_singular}}
         </a>
       </div>
       <div class="span6">
       {{#with_page_object_as 'page_object'}}
-        {{#is_allowed_to_map page_object this join=true}}
-        <a class="primary map-to-page-object" href="javascript://">
-          Map to this {{page_object.constructor.title_singular.toLowerCase}}
-          <i class="grcicon-reg-map"></i>
-        </a>
+        {{#is_allowed_to_map page_object instance join=true}}
+        {{^is_page_instance instance}}
+          <a class="primary map-to-page-object" href="javascript://">
+            Map to this {{#page_object.class.title_singular}}{{toLowerCase}}{{/page_object.class.title_singular}}
+            <i class="grcicon-reg-map"></i>
+          </a>
+        {{/is_page_instance}}
         {{/is_allowed_to_map}}
       {{/with_page_object_as}}
       </div>

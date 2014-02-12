@@ -1,6 +1,11 @@
 {{! upload evidence to GDrive by clicking this button}}
+
 {{#if allow_mapping_or_creating}}
-{{#is_allowed_to_map parent_instance "Document"}}
+{{#with_current_user_as "current_user"}}
+{{#if_helpers '\
+  #is_allowed' "create" 'ObjectDocument' _0_context=parent_instance.context.id '\
+    and ^if_equals' parent_instance.status 'Accepted' '\
+  or #is_allowed' '__GGRC_ADMIN__' 'Audit' _2_context=null}}
 <li class="tree-footer tree-item tree-item-add">
   <div class="row-fluid">
     <div class="span12">
@@ -18,5 +23,6 @@
     </div>
   </div>
 </li>
-{{/is_allowed_to_map}}
+{{/if_helpers}}
+{{/with_current_user_as}}
 {{/if}}

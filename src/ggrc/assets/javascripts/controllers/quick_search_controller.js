@@ -243,6 +243,7 @@ can.Control("CMS.Controllers.LHN", {
 
       CMS.Models.DisplayPrefs.findAll().done(function(prefs) {
         var settings, checked
+          , $lhs = $("#lhs")
           ;
 
         if(prefs.length < 1) {
@@ -254,8 +255,8 @@ can.Control("CMS.Controllers.LHN", {
         checked = (settings && 'my_work' in settings) ? !!settings.my_work : true;
         self.obs.attr("my_work", checked);
 
-        $("#lhs").cms_controllers_lhn_search({ observer: self.obs });
-        $("#lhs").cms_controllers_lhn_tooltips();
+        $lhs.cms_controllers_lhn_search({ observer: self.obs });
+        $lhs.cms_controllers_lhn_tooltips();
 
         // Delay LHN initializations until after LHN is rendered
         setTimeout(function() {
@@ -265,13 +266,16 @@ can.Control("CMS.Controllers.LHN", {
 
           target.prop('checked', checked);
           target.closest('.btn')[checked ? 'addClass' : 'removeClass']('btn-success');
-
-          $(".recent").ggrc_controllers_recently_viewed();
+          if(!$lhs.hasClass("lhs-closed")) {
+            $(".recent").ggrc_controllers_recently_viewed();
+            self.size && self.resize_lhn(self.size);
+          }
         }, 200);
-
+        self.size = prefs[0].getLHNavSize(null, "lhs") || self.min_lhn_size;
+        self.resize_lhn(self.size);
         // Collapse the LHN if they did it on a previous page
         var collapsed = prefs[0].getCollapsed(null, "lhs");
-        collapsed && $(".bar-v").trigger('click');
+        collapsed && self.toggle_lhs();
       });
     }
 
@@ -292,18 +296,21 @@ can.Control("CMS.Controllers.LHN", {
         , $lhsHolder = $(".lhs-holder")
         , $area = $(".area")
         , $bar = $(".bar-v")
+        , $search = $('.widgetsearch')
         ;
-
       if($lhs.hasClass("lhs-closed")) {
         $lhs.removeClass("lhs-closed");
         $bar.removeClass("bar-closed");
-        $lhsHolder.css("width","240px");
-        $area.css("margin-left","248px");
+        $lhsHolder.css("width", this.size + "px");
+        $area.css("margin-left", (this.size + 8) + "px");
+        $bar.css("left", this.size + "px");
+        $search.width(this.size - 100);
       } else {
         $lhs.addClass("lhs-closed");
         $bar.addClass("bar-closed");
         $lhsHolder.css("width","40px");
         $area.css("margin-left","48px");
+        $bar.css("left", "40px");
       }
 
       window.resize_areas();
@@ -312,10 +319,61 @@ can.Control("CMS.Controllers.LHN", {
         prefs[0].setCollapsed(null, "lhs", $lhs.hasClass("lhs-closed"));
       })
     }
+  
+  , min_lhn_size : 240
+  , mousedown : false
+  , dragged : false
+  , resize_lhn : function(resize){
+    var $lhs = $("#lhs")
+    , $lhsHolder = $(".lhs-holder")
+    , $area = $(".area")
+    , $bar = $(".bar-v")
+    , $search = $('.widgetsearch')
+    ;
+    if(resize < this.min_lhn_size/2 && !$lhs.hasClass("lhs-closed")) this.toggle_lhs();
+    if(resize < this.min_lhn_size) return;
+    if($lhs.hasClass("lhs-closed")) this.toggle_lhs();
+    $lhsHolder.width(resize);
+    
+    var a = (resize) + "px";
+    var b = (resize+8) + "px"
+    $area.css("margin-left",  b);
+    
+    $bar.css("left", a)
+    
+    $search.width(resize - 100);
+    window.resize_areas();
 
-  , ".bar-v click": function(el, ev) {
-      this.toggle_lhs();
+  }
+  , ".bar-v mousedown" : function(el, ev) {
+    this.mousedown = true;
+    this.dragged = false;
+  }
+  , "{window} mousemove" : function(el, ev){
+    if(!this.mousedown){
+      return;
     }
+
+    ev.preventDefault();
+    this.dragged = true;
+    this.size = ev.pageX;
+    this.resize_lhn(this.size);
+
+  }
+  , "{window} mouseup" : function(el, ev){
+    var self = this;
+    if(!this.mousedown) return;
+    
+    this.mousedown = false;
+    if(!this.dragged){
+      this.toggle_lhs();
+      return;
+    }
+    self.size = Math.max(self.size, this.min_lhn_size);
+    CMS.Models.DisplayPrefs.findAll().done(function(prefs) {
+      prefs[0].setLHNavSize(null, "lhs", self.size);
+    });
+  }
 
   , "#lhs click": function(el, ev) {
       this.resize_search();
@@ -602,7 +660,7 @@ can.Control("CMS.Controllers.LHN_Search", {
         can.view($list.data("template") || self.options.list_view, context, function(frag, xhr) {
           $list.find(self.options.list_content_selector).html(frag);
         });
-        can.view(self.options.actions_view, context, function(frag, xhr) {
+        can.view($list.data("actions") || self.options.actions_view, context, function(frag, xhr) {
           $list.find(self.options.actions_content_selector).html(frag);
         });
       });
@@ -810,10 +868,17 @@ can.Control("CMS.Controllers.LHN_Tooltips", {
   , get_tooltip_view: function(el) {
       var tooltip_view = $(el)
             .closest('[data-tooltip-view]').attr('data-tooltip-view');
-      if (tooltip_view && tooltip_view.length > 0)
-        return GGRC.mustache_path + tooltip_view;
-      else
+      if (tooltip_view && tooltip_view.length > 0) {
+        if (tooltip_view === "null") {
+          return null;
+        }
+        else {
+          return GGRC.mustache_path + tooltip_view;
+        }
+      }
+      else {
         return this.options.tooltip_view;
+      }
     }
 
   , on_fade_in_timeout: function(el, instance) {
@@ -821,16 +886,18 @@ can.Control("CMS.Controllers.LHN_Tooltips", {
         , tooltip_view = this.get_tooltip_view(el)
         ;
 
-      this.fade_in_timeout = null;
-      can.view(tooltip_view, new can.Observe({ instance: instance }), function(frag) {
-        self.options.$extended
-          .html(frag)
-          .addClass('in')
-          .removeClass('hide')
-          .css({ top: el.offset().top, left: self.options.$lhs.width() })
-          .data('model', instance);
-        self.ensure_tooltip_visibility();
-      });
+      if (tooltip_view) {
+        this.fade_in_timeout = null;
+        can.view(tooltip_view, new can.Observe({ instance: instance }), function(frag) {
+          self.options.$extended
+            .html(frag)
+            .addClass('in')
+            .removeClass('hide')
+            .css({ top: el.offset().top, left: self.options.$lhs.width() })
+            .data('model', instance);
+          self.ensure_tooltip_visibility();
+        });
+      }
     }
 
   , on_tooltip_mouseenter: function() {

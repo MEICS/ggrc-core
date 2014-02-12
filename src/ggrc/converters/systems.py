@@ -4,13 +4,17 @@
 # Maintained By: dan@reciprocitylabs.com
 
 from .base import *
-from ggrc.models.all_models import System, OrgGroup, Program, Relationship
+from ggrc.models.all_models import SystemOrProcess, System, OrgGroup, Program, Relationship
 from ggrc.models.mixins import BusinessObject
 from .base_row import *
 from collections import OrderedDict
 
 class SystemRowConverter(BaseRowConverter):
   model_class = System
+
+  def find_by_slug(self, slug):
+    # must search systems and processes for this case
+    return SystemOrProcess.query.filter_by(slug=slug).first()
 
   def setup_object(self):
     self.obj = self.setup_object_by_slug(self.attrs)

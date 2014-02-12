@@ -21,7 +21,6 @@ Feature: Basic RESTful CRUD Support
       | ControlAssertion   |
       | ControlCategory    |
       | Control            |
-      | ControlRisk        |
       | DataAsset          |
       #| Directive          |
       | DirectiveControl   |
@@ -46,9 +45,6 @@ Feature: Basic RESTful CRUD Support
       #| Program            |
       | ProgramDirective   |
       #| Relationship       |
-      | Risk               |
-      | RiskyAttribute     |
-      | RiskRiskyAttribute |
       | Section            |
       | SectionObjective   |
       #| SystemOrProcess    |

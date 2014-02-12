@@ -10,9 +10,6 @@ blueprint = Blueprint(
   static_url_path='/static/ggrc_gdrive_integration',
 )
 
-for key in settings.exports:
-  app.config.public_config[key] = app.config[key]
-
 import ggrc_gdrive_integration.models
 
 from ggrc import db
@@ -74,8 +71,40 @@ import ggrc_gdrive_integration.views
 
 from ggrc.services.registry import service
 
-all_collections = [
+contributed_services = [
   service('object_folders', models.ObjectFolder),
   service('object_files', models.ObjectFile),
   service('object_events', models.ObjectEvent)
 ]
+
+from ggrc_basic_permissions.contributed_roles import RoleContributions
+
+class GDriveRoleContributions(RoleContributions):
+  contributions = {
+      'Auditor': {
+        'read': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        },
+      'ProgramAuditEditor': {
+        'read': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        'create': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        'update': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        'delete': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        },
+      'ProgramAuditOwner': {
+        'read': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        'create': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        'update': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        'delete': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        },
+      'ProgramAuditReader': {
+        'read': ['ObjectFolder', 'ObjectFile', 'ObjectEvent'],
+        },
+      'ProgramOwner': {
+        'read': ['ObjectFolder'],
+        'create': ['ObjectFolder'],
+        'update': ['ObjectFolder'],
+        'delete': ['ObjectFolder'],
+        },
+      }
+
+ROLE_CONTRIBUTIONS = GDriveRoleContributions()

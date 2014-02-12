@@ -21,14 +21,14 @@
         data-join-mapping="{{mapping}}"
         data-join-option-type="{{model.shortName}}"
         data-join-object-id="{{parent_instance.id}}"
-        data-join-object-type="{{parent_instance.constructor.shortName}}"
+        data-join-object-type="{{parent_instance.class.shortName}}"
         data-exclude-option-types="{{exclude_option_types}}"
-        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.constructor.title_singular 'Object'}}">
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
         + {{model.title_singular}}
       </a>
       {{#if null}}
       <span class="section-expander">
-        <a href="javascript://" data-toggle="modal-ajax-form" data-modal-reset="reset" data-modal-class="modal-wide" data-object-singular="{{parent_instance.constructor.model_singular}}" data-object-plural="{{parent_instance.constructor.table_plural}}" >
+        <a href="javascript://" data-toggle="modal-ajax-form" data-modal-reset="reset" data-modal-class="modal-wide" data-object-singular="{{parent_instance.class.model_singular}}" data-object-plural="{{parent_instance.class.table_plural}}" >
           <i class="grcicon-add-black"></i>
           Create Object
         </a>
@@ -43,13 +43,17 @@
         data-toggle="multitype-modal-selector"
         data-join-mapping="{{mapping}}"
         data-join-object-id="{{parent_instance.id}}"
-        data-join-object-type="{{parent_instance.constructor.shortName}}"
+        data-join-object-type="{{parent_instance.class.shortName}}"
         data-exclude-option-types="{{exclude_option_types}}"
-        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.constructor.title_singular 'Object'}}"
-        data-object-params='{{#if_equals parent_instance.constructor.shortName "Section"}}{ "section": { "id": {{parent_instance.id}}, "title": "{{json_escape parent_instance.title}}", "description": "{{json_escape parent_instance.description}}" } }{{/if_equals}}'>
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}"
+        {{#if_instance_of parent_instance "Section"}}
+        data-object-params='{ "section": { "id": {{parent_instance.id}}, "title": "{{json_escape parent_instance.title}}", "description": "{{json_escape parent_instance.description}}" } }'
+        {{else}}
+        data-object-params=''
+        {{/if_instance_of}}>
         + Object
       </a>
-      {{#if_equals parent_instance.constructor.shortName "Section"}}
+      {{#if_instance_of parent_instance "Section"}}
       <span class="section-expander">
         &nbsp;
         &nbsp;

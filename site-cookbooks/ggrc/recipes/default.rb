@@ -48,6 +48,7 @@ execute "Prepare dev virtualenv" do
           "cd /vagrant; make setup_dev DEV_PREFIX=/vagrant-dev'"
   user "vagrant"
   group "vagrant"
+  environment ({'HOME' => '/home/vagrant'})
   action :run
 end
 
@@ -64,6 +65,7 @@ execute "Run Makefile for first time" do
           "cd /vagrant; make appengine DEV_PREFIX=/vagrant-dev'"
   user "vagrant"
   group "vagrant"
+  environment ({'HOME' => '/home/vagrant'})
   action :run
 end
 
@@ -80,7 +82,7 @@ def add_file_section(path, identifier, content)
   end_line = "# END #{identifier}"
 
   # Check for line with matching md5
-  if data.grep(/#{begin_line} #{digest}/).empty?
+  if (data.respond_to? :grep and data.grep(/#{begin_line} #{digest}/).empty?) or (data.lines.grep(/#{begin_line} #{digest}/).empty?)
     # Remove old additions
     data = data.gsub(/\s*#{begin_line}.*#{end_line}\s?[0-9a-f]*\s*/m, '')
 
@@ -98,12 +100,7 @@ def add_file_section(path, identifier, content)
 end
 
 add_file_section("/home/vagrant/.bashrc", "init_env", <<-END)
-export DEV_PREFIX=/vagrant-dev
-
-[ -n "$PS1" ] &&
-  echo "Initializing environment" &&
-  cd /vagrant &&
-  source /vagrant/bin/init_env
+[ -n "$PS1" ] && source /vagrant/bin/init_vagrant_env
 END
 
 # Update development virtualenv with requirements and dev-requirements

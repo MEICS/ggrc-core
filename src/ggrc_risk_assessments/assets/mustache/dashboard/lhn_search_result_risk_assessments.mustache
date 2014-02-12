@@ -1,0 +1,44 @@
+{{!
+    Copyright (C) 2013 Google Inc., authors, and contributors <see AUTHORS file>
+    Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+    Created By: dan@reciprocitylabs.com
+    Maintained By: dan@reciprocitylabs.com
+}}
+
+{{#list}}
+<li class="{{class.category}}" data-model="true" {{data 'model'}}>
+  <a href="{{ggrc_config_value "RISK_ASSESSMENT_URL"}}/riskDetails?risk_assessments_id={{id}}" class="show-extended" target="_blank">
+    <div class="row-fluid">
+      <div class="span8 lhs-main-title">
+        <span class="lhs-item">
+          {{firstnonempty title name email}}
+        </span>
+      </div>
+      <div class="span1 lhs-private">
+        {{#is_private}}
+          <i class="grcicon-private" rel="tooltip" title="Private"></i>
+        {{/is_private}}
+      </div>
+      <div class="span1 lhs-people">
+      {{^contact}}
+        <i class="grcicon-people-warning"></i>
+      {{/contact}}
+      </div>
+    </div>
+  </a>
+</li>
+{{/list}}
+{{^list}}
+<li class="spinner">
+</li>
+{{/list}}
+{{^is_allowed 'read' model.shortName context='any'}}
+<li class="no-access">
+  You do not have access to read this information.
+</li>
+{{/is_allowed}}
+{{#list.is_loading}}
+<li class="spinner">
+  <span {{attach_spinner '{ "radius": 4, "length": 4, "width": 2 }' 'display:inline-block; top: -3px; left: 30px;' }}></span>
+</li>
+{{/list.is_loading}}

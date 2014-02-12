@@ -42,8 +42,6 @@ Feature: Return collections that only provide stub representations
       #| DocumentationResponse    |
       #| InterviewResponse        |
       #| PopulationSampleResponse |
-      | Risk               |
-      | RiskyAttribute     |
       | Section            |
       | System             |
       | Process            |

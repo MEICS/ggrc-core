@@ -617,6 +617,7 @@
       , population_sample_responses : TypeFilter("responses", "PopulationSampleResponse")
       , related_objects_via_responses : Cross("responses", "business_objects")
       , extended_related_objects: Multi(["related_objects_via_responses"])
+      , orphaned_objects : Multi(["responses"])
       //, responses : Multi(["documentation_responses", "interview_responses", "population_sample_responses"])
     }
 

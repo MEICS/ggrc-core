@@ -149,14 +149,24 @@
 
     'deleteform': function($target, $trigger, option) {
       var form_target = $trigger.data('form-target')
-      , model = CMS.Models[$trigger.attr("data-object-singular")]
-      , instance;
+        , model = CMS.Models[$trigger.attr("data-object-singular")]
+        , instance
+        , delete_counts = new can.Observe({loading: true, counts: ""})
+        ;
+
       if($trigger.attr('data-object-id') === "page") {
         instance = GGRC.page_instance();
       } else {
         instance = model.findInCacheById($trigger.attr('data-object-id'));
       }
 
+      instance.get_orphaned_count().done(function(counts){
+          delete_counts.attr('loading', false);
+          delete_counts.attr('counts', counts);
+        }).fail(function(){
+          delete_counts.attr('loading', false);
+      });
+      
       $target
       .modal_form(option, $trigger)
       .ggrc_controllers_delete({
@@ -165,6 +175,7 @@
         , button_view : GGRC.mustache_path + "/modals/delete_cancel_buttons.mustache"
         , model : model
         , instance : instance
+        , delete_counts : delete_counts
         , modal_title : "Delete " + $trigger.attr("data-object-singular")
         , content_view : GGRC.mustache_path + "/base_objects/confirm_delete.mustache" 
       });

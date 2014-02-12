@@ -40,7 +40,6 @@ Feature: Many resources type pairs reference each other M x N relations. This
      #| Control   | people               | Person    | ??                    |
       | Control   | sections             | Section   | controls              |
       #| Control   | implemented_controls | Control   | implementing_controls |
-      | Control   | risks                | Risk      | controls              |
       #| Directive | programs             | Program   | directives            |
       | Contract  | programs             | Program   | directives            |
       | Policy    | programs             | Program   | directives            |

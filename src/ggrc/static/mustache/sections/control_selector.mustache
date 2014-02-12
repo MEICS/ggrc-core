@@ -65,7 +65,7 @@
           {{#if list.length}}
             <ul class="linked-controls">
               {{#list}}
-              <li data-model="true" data-id="{{id}}" {{data 'model'}} data-object-type="{{constructor.table_singular}}">
+              <li data-model="true" data-id="{{id}}" {{data 'model'}} data-object-type="{{class.table_singular}}">
                 <a href="javascript://" class="jump-to-control">
                   {{#with this}}
                     {{! careful to avoid using the section's title or slug here, especially when the controls haven't loaded yet }}

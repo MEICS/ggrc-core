@@ -6,23 +6,23 @@
 }}
 
 {{#list}}
-<li class="{{constructor.category}}" data-model="true" {{data 'model'}}>
+<li class="{{class.category}}" data-model="true" {{data 'model'}}>
   <a href="{{viewLink}}" class="show-extended">
-    <div class="row-fluid">
-      <div class="span8 lhs-main-title">
+    <div>
+      <div class="lhs-main-title">
         <span class="lhs-item">
           {{firstnonempty title name email}}
         </span>
       </div>
-      <div class="span1 lhs-private">
+      <div class="lhs-private">
         {{#is_private}}
-          <i class="grcicon-private" rel="tooltip" title="Private"></i>
+        <i class="grcicon-private" rel="tooltip" title="Private"></i>
         {{/is_private}}
       </div>
-      <div class="span1 lhs-people">
-      {{^contact}}
+      <div class="lhs-people">
+        {{^contact}}
         <i class="grcicon-people-warning"></i>
-      {{/contact}}
+        {{/contact}}
       </div>
     </div>
   </a>

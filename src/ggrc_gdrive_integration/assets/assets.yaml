@@ -1,6 +1,7 @@
 dashboard-js-files:
   - models/gdrive_models.js
   - models/gcal_models.js
+  - controllers/gapi_controllers.js
   - apps/gdrive.js
   - controllers/gdrive_workflows_controller.js
   - mustache_helpers.js
@@ -17,3 +18,4 @@ dashboard-js-template-files:
   - requests/gdrive_info.mustache
   - people/gplus_actions.mustache
   - people/gplus_photo.mustache
+  - gdrive/auth_button.mustache

@@ -36,7 +36,7 @@
         <div class="row-fluid">
           <div class="span6">
             <a href="{{viewLink}}" class="info-action">
-              View {{constructor.title_singular}}
+              View {{class.title_singular}}
               <i class="grcicon-goto"></i>
             </a>
           </div>
@@ -87,7 +87,7 @@
     <div class="row-fluid">
       <div class="span12 section-expandable">
 
-        {{#if_equals parent_instance.constructor.shortName "Program"}}
+        {{#if_instance_of parent_instance "Program"}}
           <a
             href="javascript://"
             rel="tooltip"
@@ -95,13 +95,13 @@
             data-toggle="modal-selector"
             data-modal-selector-options="program_controls"
             data-modal-class="modal-wide"
-            data-original-title="Map {{model.title_singular}} to this {{parent_instance.constructor.shortName}}"
+            data-original-title="Map {{model.title_singular}} to this {{parent_instance.class.shortName}}"
             data-join-object-id="{{parent_instance.id}}"
-            data-join-object-type="{{parent_instance.constructor.shortName}}">
+            data-join-object-type="{{parent_instance.class.shortName}}">
             + {{model.title_singular}}
           </a>
         {{else}}
-          {{#if_match parent_instance.constructor.shortName '^(Directive|Regulation|Policy|Standard|Contract)$'}}
+          {{#if_instance_of parent_instance 'Directive'}}
             <a href="javascript://" class="section-add">
               + Control
             </a>
@@ -123,8 +123,8 @@
                 Export Controls
               </a>
             </span>
-          {{/if_match}}
-        {{/if_equals}}
+          {{/if_instance_of}}
+        {{/if_instance_of}}
       </div>
     </div>
   </li>

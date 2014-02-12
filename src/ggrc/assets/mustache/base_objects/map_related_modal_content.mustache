@@ -10,13 +10,13 @@
 <div class="row-fluid">
 
   {{#page_object}}
-  <div class="span4 detail_column {{constructor.model_singular.toLowerCase}}">
-    <input type="hidden" name="source.type" value="{{constructor.model_singular}}"/>
+  <div class="span4 detail_column {{class.model_singular.toLowerCase}}">
+    <input type="hidden" name="source.type" value="{{class.model_singular}}"/>
     <input type="hidden" name="source.id" value="{{id}}"/>
     <div class="selector-info centered">
-        <h4 class="{{constructor.category}}">
-          <i class="grcicon-{{constructor.model_singular.toLowerCase}}-color"></i>
-          {{constructor.title_singular}}
+        <h4 class="{{class.category}}">
+          <i class="grcicon-{{class.model_singular.toLowerCase}}-color"></i>
+          {{class.title_singular}}
         </h4>
         <br>
         {{ title }}
@@ -36,13 +36,13 @@
   </div>
 
   {{#related_object}}
-  <div class="span4 detail_column {{constructor.model_singular.toLowerCase}}">
-    <input type="hidden" name="destination.type" value="{{constructor.model_singular}}"/>
+  <div class="span4 detail_column {{class.model_singular.toLowerCase}}">
+    <input type="hidden" name="destination.type" value="{{class.model_singular}}"/>
     <input type="hidden" name="destination.id" value="{{id}}"/>
     <div class="selector-info centered">
-        <h4 class="{{constructor.category}}">
-          <i class="grcicon-{{constructor.model_singular.toLowerCase}}-color"></i>
-          {{constructor.title_singular}}
+        <h4 class="{{class.category}}">
+          <i class="grcicon-{{class.model_singular.toLowerCase}}-color"></i>
+          {{class.title_singular}}
         </h4>
         <br>
         {{ title }}

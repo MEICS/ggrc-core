@@ -31,9 +31,6 @@
                     {{#if roles.length}}
                       <span class="role" title="{{#roles}}{{permission_summary}} {{/roles}}">
                         {{roles.0.permission_summary}}
-                        {{#roles.1}}
-                          + {{sum roles.length '-1'}}
-                        {{/roles.1}}
                       </span>
                     {{else}}
                       <span class="no-role">

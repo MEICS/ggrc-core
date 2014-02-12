@@ -1,0 +1,61 @@
+-# Copyright (C) 2014 Google Inc., authors, and contributors <see AUTHORS file>
+-# Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+-# Created By: anze@reciprocitylabs.com
+-# Maintained By: anze@reciprocitylabs.com
+
+-set width_pcts = [33,34,33]
+-set column_names = ["slug", "title", "content"]
+-set header_overrides = {}
+-set all_errors = converter.errors
+-set has_errors = converter.has_errors()
+-set all_warnings = converter.warnings
+-set has_warnings = converter.has_warnings()
+-set objects_imported = converter.total_imported
+-set objects_created = converter.objects_created
+-set objects_updated = converter.objects_updated
+
+.results-table
+  %h2
+    Data to Import
+
+  .row-fluid
+    #sampleData.span12
+      -if has_errors
+        -for i in all_errors
+          %p.label-error
+            =all_errors[loop.index0]
+      -if has_warnings
+        -for i in all_warnings
+          %p.label-warning
+            =all_warnings[loop.index0]
+
+      -include "directives/_import_table.haml"
+        
+      -if has_errors
+        .alert.alert-error
+          %button{ 'type': 'button', 'class': 'close', 'data-dismiss': 'alert' }
+            &times;
+          %strong
+            Error!
+          Correct Errors on gSheet and Upload a new CSV
+
+  -if objects_imported > 1
+    {{objects_imported}} Help page will be imported,
+  -else
+    {{objects_imported}} Help pages will be imported,
+  %br/
+  {{objects_created}} will be created,
+  %br/
+  {{objects_updated}} will be updated
+
+  .import-actions
+    .row-fluid
+        .span6
+          %input{ 'value': 'Cancel', 'class': 'btn btn-large', 'type': 'submit', 'name': 'cancel' }
+        .span6
+          -if has_errors
+            &nbsp;
+          -elif has_warnings
+            %input{ 'value': 'Proceed with Caution', 'class': 'btn btn-large btn-warning pull-right', 'type': 'submit', 'name': 'confirm' }
+          -else
+            %input{ 'value': 'Finish Importing', 'class': 'btn btn-large btn-success pull-right', 'type': 'submit', 'name': 'confirm' }

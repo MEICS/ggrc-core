@@ -1,9 +1,8 @@
 {{!div class="modal-body"}}
 {{#instance}}
 <form action="javascript://">
-  {{{ handle_context }}}
   <div class="row-fluid">
-    <div class="span6">
+    <div class="span5">
       <label>
         PBC Response
         <span class="required">*</span>
@@ -11,48 +10,40 @@
       <input id="response_description" tabindex="1" class="input-block-level" placeholder="Response Title" name="description" type="text" value="{{{description}}}" autofocus>
     </div>
     
-    <div class="span6">
-      <div class="row-fluid">
-        <div class="span6">&nbsp;</div>
-        <div class="span6">
-          <label>
-            Status
-          </label>
-          <select class="input-block-level" name="status" {{#new_object_form}}disabled="true"{{/new_object_form}} tabindex="2">
-            {{#iterate 'Assigned' 'Accepted' 'Completed'}}
-            <option {{#if_equals iterator instance.status}}selected="true"{{/if_equals}}>{{iterator}}</option>
-            {{/iterate}}
-          </select>
-        </div>
+    {{#using contact=instance.contact}}
+    {{#with_current_user_as 'current_user'}}
+    <div class="span5">
+      <label>
+        Assignee
+        <span class="required">*</span>
+      </label>
+      <i class="grcicon-person-green pull-left icon-field"></i>
+      <div class="objective-selector">
+        {{#if new_object_form}}
+          {{#using request=instance.request}}
+          {{#using request_assignee=request.assignee}}
+            <input tabindex="3" type="text" name="contact.email" class="span11" data-lookup="Person" value="{{firstnonempty request_assignee.email current_user.email ''}}">
+            <input type="hidden" name="contact.id" value="{{firstnonempty request_assignee.id current_user.id ''}}">
+          {{/using}}
+          {{/using}}
+        {{else}}
+          <input tabindex="3" type="text" name="contact.email" class="span11" data-lookup="Person" value="{{firstnonempty contact.email parent_instance.contact.email current_user.email ''}}">
+          <input type="hidden" name="contact.id" value="{{firstnonempty contact.id current_user.id ''}}">
+        {{/if}}
       </div>
-      
-      <div class="row-fluid">
-        {{#using contact=instance.contact}}
-        {{#with_current_user_as 'current_user'}}
-        <div class="span12">
-          <label>
-            Assignee
-            <span class="required">*</span>
-          </label>
-          <i class="grcicon-person-green pull-left icon-field"></i>
-          <div class="objective-selector">
-            {{#if new_object_form}}
-              {{#using request=instance.request}}
-              {{#using request_assignee=request.assignee}}
-                <input tabindex="3" type="text" name="contact.email" class="input-wide" data-lookup="Person" value="{{firstnonempty request_assignee.email current_user.email ''}}">
-                <input type="hidden" name="contact.id" value="{{firstnonempty request_assignee.id current_user.id ''}}">
-              {{/using}}
-              {{/using}}
-            {{else}}
-              <input tabindex="3" type="text" name="contact.email" class="input-wide" data-lookup="Person" value="{{firstnonempty contact.email parent_instance.contact.email current_user.email ''}}">
-              <input type="hidden" name="contact.id" value="{{firstnonempty contact.id current_user.id ''}}">
-            {{/if}}
-          </div>
-        </div>
-        {{/with_current_user_as}}
-        {{/using}}
-      </div>
-      
+    </div>
+    {{/with_current_user_as}}
+    {{/using}}
+    
+    <div class="span2">
+      <label>
+        Status
+      </label>
+      <select class="input-block-level" name="status" {{#new_object_form}}disabled="true"{{/new_object_form}} tabindex="2">
+        {{#iterate 'Assigned' 'Submitted' 'Accepted' 'Rejected'}}
+        <option {{#if_equals iterator instance.status}}selected="true"{{/if_equals}}>{{iterator}}</option>
+        {{/iterate}}
+      </select>
     </div>
   </div>
   

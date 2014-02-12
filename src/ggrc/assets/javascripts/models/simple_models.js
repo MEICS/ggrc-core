@@ -61,7 +61,16 @@ can.Model.Cacheable("CMS.Models.Program", {
     this.validatePresenceOf("title");
     this._super.apply(this, arguments);
   }
-}, {});
+}, {
+  set_owner_to_current_user_if_unset : function() {
+    // Do not add an owner to a private program. Ownership is managed
+    // through role assignment for private programs.
+    if (!this.private)
+    {
+      this._super();
+    }
+  }
+});
 
 can.Model.Cacheable("CMS.Models.Cycle", {
 }, {
@@ -902,7 +911,7 @@ can.Model.Cacheable("CMS.Models.Risk", {
 can.Model.Cacheable("CMS.Models.Objective", {
   root_object : "objective"
   , root_collection : "objectives"
-  , category : "governance"
+  , category : "objectives"
   , title_singular : "Objective"
   , title_plural : "Objectives"
   , findAll : "GET /api/objectives"
@@ -1016,6 +1025,7 @@ can.Model.Cacheable("CMS.Models.Role", {
 can.Model.Cacheable("CMS.Models.Audit", {
   root_object : "audit"
   , root_collection : "audits"
+  , category : "programs"
   , findOne : "GET /api/audits/{id}"
   , update : "PUT /api/audits/{id}"
   , destroy : "DELETE /api/audits/{id}"
@@ -1077,7 +1087,55 @@ can.Model.Cacheable("CMS.Models.Audit", {
     this.validatePresenceOf("title");
   }
 }, {
+  save : function() {
+    return this._super.apply(this, arguments).then(function(instance) {
+      var no_change = false
+        , auditor_role
+        ;
 
+      Permission.refresh(); //Creating an audit creates new contexts.  Make sure they're reflected client-side
+      
+      if(typeof instance.auditor === 'undefined'){
+        return instance;
+      }
+      // Find the Auditor user role
+      return CMS.Models.Role.findAll({name__in: "Auditor"}).then(function(roles){
+        if(roles.length === 0) {
+          console.warn("No Auditor role");
+          return new $.Deferred().reject();
+        }
+        auditor_role = roles[0];
+        
+        return CMS.Models.UserRole.findAll({
+          context_id__in: instance.context.id,
+          role_id__in: auditor_role.id
+        });
+      }).then(function(auditor_roles){
+        return $.when(
+          can.map(auditor_roles, function(role){
+            if(typeof instance.auditor !== "undefined" &&
+                instance.auditor != null &&
+                role.person.id === instance.auditor.id) {
+              // Auditor hasn't changed
+              no_change = true;
+              return $.when();
+            }
+            return role.refresh().then(function(role){role.destroy();});
+        }));
+      }).then(function(){
+        if(!instance.auditor || no_change){
+          return $.when();
+        }
+        return $.when(new CMS.Models.UserRole({
+          context : instance.context,
+          role : auditor_role,
+          person : instance.auditor
+        }).save());
+      }).then(function(){
+        return instance;
+      });
+    });
+  }
 });
 
 can.Model.Cacheable("CMS.Models.Request", {
@@ -1116,7 +1174,6 @@ can.Model.Cacheable("CMS.Models.Request", {
     this._super.apply(this, arguments);
     this.validatePresenceOf("due_on");
     this.validatePresenceOf("assignee");
-    this.validatePresenceOf("objective");
     if(this === CMS.Models.Request) {
       this.bind("created", function(ev, instance) {
         if(instance.constructor === CMS.Models.Request) {
@@ -1124,12 +1181,6 @@ can.Model.Cacheable("CMS.Models.Request", {
         }
       });
     }
-  }
-  , init : function() {
-    this._super.apply(this, arguments);
-    this.validatePresenceOf("due_on");
-    this.validatePresenceOf("assignee");
-    this.validatePresenceOf("objective");
   }
 }, {
   init : function() {
@@ -1142,9 +1193,11 @@ can.Model.Cacheable("CMS.Models.Request", {
     setAssigneeFromAudit.call(this);
 
     this.bind("audit", setAssigneeFromAudit);
-  }
-  , response_model_class : function() {
-    return can.capitalize(this.request_type.replace(/ [a-z]/g, function(a) { return a.slice(1).toUpperCase(); })) + "Response";
+    this.attr("response_model_class", can.compute(function() {
+      return can.capitalize(this.attr("request_type")
+          .replace(/ [a-z]/g, function(a) { return a.slice(1).toUpperCase(); }))
+        + "Response";
+    }, this));
   }
 });
 

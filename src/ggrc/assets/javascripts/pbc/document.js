@@ -62,3 +62,12 @@ can.Model.Cacheable("CMS.Models.Document", {
 });
 
 })(this, can);
+
+CMS.Models.Document("CMS.Models.PopulationWorksheet", {}, {});
+CMS.Models.PopulationWorksheet.title_singular = "Population Worksheet";
+
+CMS.Models.Document("CMS.Models.SampleWorksheet", {}, {});
+CMS.Models.SampleWorksheet.title_singular = "Sample Worksheet";
+
+CMS.Models.Document("CMS.Models.SampleEvidence", {}, {});
+CMS.Models.SampleEvidence.title_singular = "Sample Evidence";

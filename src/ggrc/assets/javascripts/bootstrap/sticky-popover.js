@@ -59,16 +59,16 @@
           this.tip().css({opacity : window.getComputedStyle(this.tip()[0]).opacity});
         }
 
-        if (this.$element.children('div.popover-data-title').length > 0) {
+        if (this.$element.children('.popover-data-title').length > 0) {
           this.$element.attr(
               'data-original-title',
-              this.$element.children('div.popover-data-title').html());
+              this.$element.children('.popover-data-title').html());
         }
 
-        if (this.$element.children('div.popover-data-content').length > 0) {
+        if (this.$element.children('.popover-data-content').length > 0) {
           this.$element.attr(
               'data-content',
-              this.$element.children('div.popover-data-content').html());
+              this.$element.children('.popover-data-content').html());
         }
 
         this.displayState = 'show';

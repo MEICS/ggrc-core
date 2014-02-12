@@ -256,17 +256,6 @@ class ProcessFactory(ModelFactory):
   status = FuzzyChoice(MODEL.VALID_STATES)
 
 
-# Risk Objects
-
-class RiskFactory(ModelFactory):
-  MODEL = models.Risk
-  status = FuzzyChoice(MODEL.VALID_STATES)
-
-class RiskyAttributeFactory(ModelFactory):
-  MODEL = models.RiskyAttribute
-  status = FuzzyChoice(MODEL.VALID_STATES)
-
-
 # Audit Objects
 
 class AuditFactory(ModelFactory):
@@ -307,10 +296,6 @@ class ControlAssertionFactory(ModelFactory):
 
 class ControlControlFactory(ModelFactory):
   MODEL = models.ControlControl
-  status = FuzzyChoice(MODEL.VALID_STATES)
-
-class ControlRiskFactory(ModelFactory):
-  MODEL = models.ControlRisk
   status = FuzzyChoice(MODEL.VALID_STATES)
 
 class ControlSectionFactory(ModelFactory):
@@ -359,10 +344,6 @@ class ProgramDirectiveFactory(ModelFactory):
 
 class RelationshipFactory(ModelFactory):
   MODEL = models.Relationship
-  status = FuzzyChoice(MODEL.VALID_STATES)
-
-class RiskRiskyAttributeFactory(ModelFactory):
-  MODEL = models.RiskRiskyAttribute
   status = FuzzyChoice(MODEL.VALID_STATES)
 
 class SectionObjectiveFactory(ModelFactory):

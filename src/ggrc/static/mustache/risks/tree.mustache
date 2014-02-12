@@ -75,12 +75,12 @@
   <div class="item-content">
   </div>
   {{#if draw_children}}
-  {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
+  {{#prune_context}} {{! this line is just chopping the context stack down to one element}}
   <div class="item-content" {{#start_expanded}}style="display: block;"{{/start_expanded}}>
     {{#child_options}}
     <ul class="tree-structure" {{data 'options'}} {{ (el) -> el.cms_controllers_tree_view(el.data("options")) }}></ul>
     {{/child_options}}
   </div>
-  {{/if_null}}
+  {{/prune_context}}
   {{/if}}
 </li>

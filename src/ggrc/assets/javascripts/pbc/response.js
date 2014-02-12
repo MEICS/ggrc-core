@@ -18,15 +18,17 @@ can.Model.Cacheable("CMS.Models.Response", {
   , init : function() {
     this._super && this._super.apply(this, arguments);
 
+    function refresh_request(ev, instance) {
+      if(instance instanceof CMS.Models.Response) {
+        instance.request.reify().refresh();
+      }
+    }
     this.cache = {};
     if(this !== CMS.Models.Response) {
       CMS.Models.Response.subclasses.push(this);
     } else {
-      this.bind("created destroyed", function(ev, instance) {
-        if(instance instanceof CMS.Models.Response) {
-          instance.request.reify().refresh();
-        }
-      });
+      this.bind("created", refresh_request);
+      this.bind("destroyed", refresh_request);
     }
   }
   , create : "POST /api/responses"

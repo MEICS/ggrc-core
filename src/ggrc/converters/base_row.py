@@ -7,7 +7,7 @@ from datetime import datetime
 import re
 from .common import *
 from ggrc.models.all_models import (
-    ControlCategory, ControlAssertion,
+    Audit, ControlCategory, ControlAssertion,
     Control, Document, Objective, ObjectControl, ObjectiveControl,
     ObjectObjective, ObjectOwner, ObjectPerson, Option, Person, Process, 
     Relationship, Request, Section, SectionObjective, System, SystemOrProcess,
@@ -180,11 +180,7 @@ class BaseRowConverter(object):
     self.handle(key, OptionColumnHandler, **options)
 
   def find_by_slug(self, slug):
-    if self.importer.options.get('is_biz_process'):
-      target_class = Process
-    else:
-      target_class = self.model_class
-    return target_class.query.filter_by(slug=slug).first()
+    return self.model_class.query.filter_by(slug=slug).first()
 
   def set_attr(self, name, value):
     try:
@@ -341,9 +337,9 @@ class ContactEmailHandler(ColumnHandler):
       self.add_error("A valid email address is required")
     elif person_must_exist:
       value = self.find_contact(value, is_required=is_required)
-    elif value and not re.match(Person.EMAIL_RE_STRING, value):
+    elif value and not re.match(Person.EMAIL_RE_STRING, value, re.IGNORECASE):
       message = "{} is not a valid email. \
-                Plerse use following format: user@example.com".format(value)
+                Please use following format: user@example.com".format(value)
       self.add_error(message) if is_required else self.add_warning(message)
     return value
 
@@ -379,8 +375,13 @@ class AssigneeHandler(ContactEmailHandler):
   def parse_item(self, value):
     # in case Assignee field does not exist or stripped version is empty
     if not value or len(value.strip()) == 0:
-      # Audit should exist; was passed from view function
-      audit = self.importer.options.get('audit')
+      # Use current request owner if there is one
+      current_request_assignee = self.importer.obj.assignee
+      if current_request_assignee:
+        self.add_warning("Blank field; assignee will remain as {}".format(current_request_assignee.display_name))
+        return current_request_assignee
+      # Otherwise, default to owner of audit (received via view function)
+      audit = Audit.query.get(self.importer.options.get('audit_id'))
       audit_owner = getattr(audit, 'contact', None)
       if audit_owner:
         # Owner should exist, and if so, return that Person
@@ -411,11 +412,16 @@ class SlugColumnHandler(ColumnHandler):
       if self.value in self.base_importer.get_slugs():
         self.add_error('Slug Code is duplicated in CSV')
       else:
+        self.validate(content)
         self.base_importer.add_slug_to_slugs(self.value)
-      self.validate(content)
+      self.value = content
+      self.set_attr(content)
     else:
-      self.add_warning('Code will be generated on completion of import')
-    return content
+      if self.options.get('is_required'):
+        # execute usual validation behavior
+        self.validate(content)
+      else:
+        self.add_warning('Code will be generated on completion of import')
 
 class OptionColumnHandler(ColumnHandler):
 
@@ -487,7 +493,11 @@ class DateColumnHandler(ColumnHandler):
           date_result = datetime.strptime(value, "%Y-%m-%d")
         elif value:
           raise ValueError("Error parsing the date string")
-
+      default_value = self.options.get('default_value')
+      if default_value and value == '':
+        self.add_warning("This field will be set to the date {}".format(
+            default_value.strftime("%m/%d/%Y")))
+        date_result = default_value
       if date_result:
         return "{year}-{month}-{day}".format(year=date_result.year,month=date_result.month,day=date_result.day)
       else:
@@ -679,11 +689,16 @@ class ObjectiveHandler(ColumnHandler):
 
   def parse_item(self, value):
     # if this slug exists, return the objective_id, otherwise throw error
-    objective = Objective.query.filter_by(slug=value.upper()).first()
-    if not objective:
-      self.add_error("Objective code {} does not exist.".format(value))
+    if value:
+      objective = Objective.query.filter_by(slug=value.upper()).first()
+      if not objective:
+        self.add_error("Objective code '{}' does not exist.".format(value))
+      else:
+        return objective.id
     else:
-      return objective.id
+      if self.options.get('is_needed_later'):
+        self.add_warning("You will need to connect an Objective later.")
+      return None
 
   def export(self):
     objective_id = getattr(self.importer.obj, 'objective_id', '')
@@ -796,7 +811,7 @@ class LinkPeopleHandler(LinksHandler):
       data = { 'email' : value }
 
     if data:
-      if data.get('email') and not re.match(Person.EMAIL_RE_STRING, data['email']):
+      if data.get('email') and not re.match(Person.EMAIL_RE_STRING, data['email'], re.IGNORECASE):
         self.add_link_warning("This email address is invalid and will not be mapped")
       else:
         return data

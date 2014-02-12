@@ -19,27 +19,25 @@
     </div>
   </div>
 </div>
-<div class="selector-list">
+<div class="selector-list people-selector">
   <ul class="new-tree tree-structure">
     {{#options}}
     <li class="tree-item" {{ data 'option' }} data-id="{{ id }}">
       <div class="item-main">
-        <div class="simple-link">
+        <a href="javascript://" class="openclose">
           <div class="row-fluid">
             <div class="span11">
-              <div class="openclose">
-                <div class="item-data">
-                  <div class="tree-title-area">
-                    {{name}}
-                  </div>
+              <div class="item-data">
+                <div class="tree-title-area">
+                  {{name}}
                 </div>
               </div>
             </div>
             <div class="span1">
-              <input type="checkbox" rel="tooltip" title="map">
+              <input type="radio" name="map" rel="tooltip" title="map">
             </div>
           </div>
-        </div>
+        </a>
       </div>
       <div class="tier-2-info item-content">
         <div class="tier-2-info-content">

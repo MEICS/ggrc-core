@@ -5,8 +5,10 @@
     Maintained By: brad@reciprocitylabs.com
 }}
 
-{{#is_allowed_to_map parent_instance model.shortName}}
 {{#if allow_mapping_or_creating}}
+{{#if_instance_of parent_instance 'Directive|Program'}}
+{{#if allow_creating}}
+{{#is_allowed 'create' model.shortName context=null}}
 <li class="tree-footer tree-item tree-item-add">
   <div class="row-fluid">
     <div class="span12 section-expandable">
@@ -14,21 +16,6 @@
         + {{model.title_singular}}
       </a>
       <span class="section-expander">
-
-        {{#if_match parent_instance.constructor.shortName '^(Directive|Regulation|Policy|Standard|Contract)$'}}
-        {{#if allow_creating}}
-        {{#is_allowed 'create' model.shortName context=null}}
-        <a href="javascript://" class="section-create" data-toggle="modal-ajax-form" data-modal-reset="reset" data-dirty="#regulations, #combo" data-route="regulations" data-modal-class="modal-wide" data-object-singular="Control" data-object-plural="controls" data-object-params='{ "directive": { "type": "{{parent_instance.constructor.shortName}}", "id": {{parent_instance.id}} } }'>
-          <i class="grcicon-add-black"></i>
-          Create {{model.title_singular}}
-        </a>
-        {{/is_allowed}}
-        {{/if}}
-
-        {{else}}
-
-        {{#if allow_mapping}}
-        {{#is_allowed_to_map parent_instance model.shortName}}
         <a
           href="javascript://"
           rel="tooltip"
@@ -37,17 +24,11 @@
           data-join-mapping="{{mapping}}"
           data-join-option-type="{{model.shortName}}"
           data-join-object-id="{{parent_instance.id}}"
-          data-join-object-type="{{parent_instance.constructor.shortName}}"
-          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.constructor.title_singular 'Object'}}">
-          + {{model.title_singular}}
+          data-join-object-type="{{parent_instance.class.shortName}}"
+          data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
+          <i class="grcicon-add-black"></i>
+          {{model.title_singular}}
         </a>
-        {{/is_allowed_to_map}}
-        {{/if}}
-        {{/if_match}}
-
-        {{#if_match parent_instance.constructor.shortName '^(Directive|Regulation|Policy|Standard|Contract|Program)$'}}
-        {{#if allow_creating}}
-        {{#is_allowed 'create' model.shortName context=null}}
         &nbsp;
         &nbsp;
         <a href="{{parent_instance.viewLink}}/import_controls?return_to={{param_current_location}}" class="section-import">
@@ -62,13 +43,38 @@
           Export Controls
         </a>
         {{/if}}
-        {{/is_allowed}}
-        {{/if}}
-        {{/if_match}}
-
       </span>
     </div>
   </div>
 </li>
+{{/is_allowed}}
 {{/if}}
+
+{{else}}
+
+{{#if allow_mapping}}
+{{#is_allowed_to_map parent_instance model.shortName}}
+
+<li class="tree-footer tree-item tree-item-add">
+  <div class="row-fluid">
+    <div class="span12">
+      <a
+        href="javascript://"
+        rel="tooltip"
+        data-placement="left"
+        data-toggle="multitype-modal-selector"
+        data-join-mapping="{{mapping}}"
+        data-join-option-type="{{model.shortName}}"
+        data-join-object-id="{{parent_instance.id}}"
+        data-join-object-type="{{parent_instance.class.shortName}}"
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
+        + {{model.title_singular}}
+      </a>
+    </div>
+  </div>
+</li>
+
 {{/is_allowed_to_map}}
+{{/if}}
+{{/if_instance_of}}
+{{/if}}

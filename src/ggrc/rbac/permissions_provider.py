@@ -217,3 +217,7 @@ class DefaultUserPermissions(UserPermissions):
           instance.context_id
           )
         )
+
+  def is_admin(self):
+    """Whether the user has ADMIN permissions."""
+    return self._is_allowed(self.ADMIN_PERMISSION)

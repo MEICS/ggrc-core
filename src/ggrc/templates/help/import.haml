@@ -1,0 +1,22 @@
+-# Copyright (C) 2014 Google Inc., authors, and contributors <see AUTHORS file>
+-# Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+-# Created By: anze@reciprocitylabs.com
+-# Maintained By: anze@reciprocitylabs.com
+
+-extends "layouts/dashboard.haml"
+
+-block title
+  Import/Export
+
+-block header
+  %h1.business
+    .grcobject.business
+      %i.grcicon-imp-exp-white
+    Import {{import_kind}}
+
+-block main
+  .clearfix
+    .object-area.import-area
+      .column-set
+        .widget-area
+          -include 'help/_import.haml'

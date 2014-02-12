@@ -6,7 +6,7 @@
 }}
 
 
-  <li class="tree-item programs responses-list" data-object-id="{{instance.id}}" data-object-type="{{instance.constructor.table_singular}}">
+  <li class="tree-item programs responses-list" data-object-id="{{instance.id}}" data-object-type="{{instance.class.table_singular}}">
     <div class="item-main" data-model="true" {{#instance}}{{data 'model'}}{{/instance}}>
       <a href="javascript://" class="openclose">
         <div class="row-fluid">
@@ -26,7 +26,7 @@
                   ^if' allow_mapping_or_creating '\
                   or ^is_allowed' 'update' instance '\
                 ' _1_context=instance.context.id}}
-                  {{{render '/static/mustache/people/popover.mustache' person=contact}}}
+                  {{{renderLive '/static/mustache/people/popover.mustache' person=contact}}}
                 {{else}}
                   <input type="text" name="contact.name" data-lookup="Person" class="span8 short-field" value="{{firstnonempty contact.name contact.email ''}}">
                 {{/if_helpers}}
@@ -42,7 +42,7 @@
                 <span class="black-font">{{instance.status}}</span>
               {{else}}
                 <select name="status" class="span10 short-field">
-                  {{#iterate 'Assigned' 'Accepted' 'Completed'}}
+                  {{#iterate 'Assigned' 'Submitted' 'Accepted' 'Rejected'}}
                   <option {{#if_equals iterator instance.status}}selected="true"{{/if_equals}}>{{iterator}}</option>
                   {{/iterate}}
                 </select>
@@ -54,7 +54,7 @@
     
     <div class="tier-2-info item-content">
         {{! The parent is Audit on My Work/Profile pages }}
-        {{#if_equals parent_instance.constructor.shortName "Audit"}}
+        {{#if_instance_of parent_instance "Audit"}}
         {{#using request=instance.request}}
           <div class="tier-2-info-content">
             <div class="response-connect">
@@ -76,13 +76,13 @@
             {{/if}}
             {{#if request.assignee}}
               {{#using assignee=request.assignee}}
-              <div class="span6"><p><strong>requested by: </strong>{{{render '/static/mustache/people/popover.mustache' person=assignee}}}</p></div>
+              <div class="span6"><p><strong>requested by: </strong>{{{renderLive '/static/mustache/people/popover.mustache' person=assignee}}}</p></div>
               {{/using}}
             {{/if}}
             </div>
           </div>
         {{/using}}
-        {{/if_equals}}
+        {{/if_instance_of}}
         
         {{#if_helpers '\
           #if' allow_mapping_or_creating '\
@@ -151,7 +151,7 @@
                 <div class="row-fluid">
                   {{#using population_worksheet=instance.population_worksheet}}
                   <div class="span9">
-                    <input type="text" name="population_worksheet.name" data-lookup="Document" class="input-block-level" placeholder="Enter URL" value="{{firstnonempty population_worksheet.name population_worksheet.link ''}}">
+                    <input type="text" name="population_worksheet.name" data-lookup="PopulationWorksheet" class="input-block-level" placeholder="Enter URL" value="{{firstnonempty population_worksheet.name population_worksheet.link ''}}">
                   </div>
                   {{/using}}
                   <!--
@@ -159,7 +159,7 @@
                       <span class="choose">OR</span>
                     </div>
                     <div class="span2">
-                      <a href="javascript://" data-toggle="modal-ajax-form" data-modal-reset="reset" class="btn btn-add" data-modal-class="modal-wide" data-object-singular="Request" data-object-plural="requests" data-object-params='{ "{{instance.constructor.table_singular}}": {"id" : {{instance.id}}, "type" : "{{instance.constructor.model_singular}}" } }'><i class="grcicon-upload"></i> Upload</a>
+                      <a href="javascript://" data-toggle="modal-ajax-form" data-modal-reset="reset" class="btn btn-add" data-modal-class="modal-wide" data-object-singular="Request" data-object-plural="requests" data-object-params='{ "{{instance.class.table_singular}}": {"id" : {{instance.id}}, "type" : "{{instance.class.model_singular}}" } }'><i class="grcicon-upload"></i> Upload</a>
                     </div>
                   -->
                 </div>
@@ -177,7 +177,7 @@
                 <div class="row-fluid">
                   {{#using sample_worksheet=instance.sample_worksheet}}
                   <div class="span9">
-                    <input type="text" name="sample_worksheet.name" data-lookup="Document" class="input-block-level" placeholder="Enter URL" value="{{firstnonempty sample_worksheet.name sample_worksheet.link ''}}">
+                    <input type="text" name="sample_worksheet.name" data-lookup="SampleWorksheet" class="input-block-level" placeholder="Enter URL" value="{{firstnonempty sample_worksheet.name sample_worksheet.link ''}}">
                   </div>
                   {{/using}}
                   <!--
@@ -203,7 +203,7 @@
                 <div class="row-fluid">
                   {{#using sample_evidence=instance.sample_evidence}}
                   <div class="span9">
-                    <input type="text" name="sample_evidence.name" data-lookup="Document" class="input-block-level" placeholder="Enter URL" value="{{firstnonempty sample_evidence.name sample_evidence.link ''}}">
+                    <input type="text" name="sample_evidence.name" data-lookup="SampleEvidence" class="input-block-level" placeholder="Enter URL" value="{{firstnonempty sample_evidence.name sample_evidence.link ''}}">
                   </div>
                   {{/using}}
                   <!--

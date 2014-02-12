@@ -469,22 +469,29 @@ $(function() {
   $(document.body).on("click", "a[data-toggle=unmap]", function(ev) {
     var $el = $(this)
       ;
-
+    $el.fadeTo('fast', 0.25);
     $el.children(".result").each(function(i, result_el) {
       var $result_el = $(result_el)
         , result = $result_el.data('result')
         , mappings = result && result.get_mappings()
         , i
         ;
-
+      
+      function notify(instance){
+        $(document.body).trigger(
+            "ajax:flash"
+            , {"success" : "Unmap successful."}
+          );
+      }
+      
       can.each(mappings, function(mapping) {
         mapping.refresh().done(function() {
           if (mapping instanceof CMS.Models.Control) {
             mapping.removeAttr('directive');
-            mapping.save();
+            mapping.save().then(notify);
           }
           else {
-            mapping.destroy();
+            mapping.destroy().then(notify);
           }
         });
       });

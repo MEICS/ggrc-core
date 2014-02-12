@@ -6,7 +6,7 @@
 }}
 
 {{#list}}
-<li class="tree-item {{instance.constructor.model_singular.toLowerCase}}" data-object-id="{{instance.id}}" data-object-type="{{instance.constructor.table_singular}}">
+<li class="tree-item {{instance.class.model_singular.toLowerCase}}" data-object-id="{{instance.id}}" data-object-type="{{instance.class.table_singular}}">
   <div class="item-main" data-model="true" {{data 'model'}}>
     
     <a href="javascript://" class="openclose">
@@ -14,7 +14,7 @@
         <div class="span10">
           <div class="item-data">
             <div class="tree-title-area">
-              <i class="grcicon-{{instance.constructor.model_singular.toLowerCase}}-color"></i>
+              <i class="grcicon-{{instance.class.model_singular.toLowerCase}}-color"></i>
               {{instance.display_name}}
             </div>
           </div>
@@ -60,7 +60,7 @@
         </div>
         <div class="span6">
           <a  title="Edit this object">
-          <a class="info-action pull-right" data-object-plural="{{instance.constructor.table_plural}}" data-object-singular="{{instance.constructor.model_singular}}" data-object-id="{{instance.id}}" data-modal-class="modal-wide" data-placement="left" data-toggle="modal-ajax-form" href="javascript://" rel="tooltip" title="Edit {{instance.constructor.model_singular}}">
+          <a class="info-action pull-right" data-object-plural="{{instance.class.table_plural}}" data-object-singular="{{instance.class.model_singular}}" data-object-id="{{instance.id}}" data-modal-class="modal-wide" data-placement="left" data-toggle="modal-ajax-form" href="javascript://" rel="tooltip" title="Edit {{instance.class.model_singular}}">
             <i class="grcicon-edit"></i>
             Edit
           </a>
@@ -84,7 +84,7 @@
           {{^single_object}}
             <a href="{{instance.viewLink}}" class="info-action pull-right">
               <i class="grcicon-goto"></i>
-              View {{instance.constructor.model_singular}}
+              View {{instance.class.model_singular}}
             </a>
           {{/single_object}}
         </div>
@@ -94,14 +94,14 @@
 
     
     {{#if null}}{{!draw_children}}
-      {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
+      {{#prune_context}} {{! this line is just chopping the context stack down to one element}}
         <div class="inner-tree">
           {{#child_options}}
-            <h6>{{firstnonempty list_title instance.constructor.title_plural}}</h6>
+            <h6>{{firstnonempty list_title instance.class.title_plural}}</h6>
             <ul class="tree-structure new-tree" {{data 'options'}} {{ (el) -> el.cms_controllers_tree_view(el.data("options")) }}></ul>
           {{/child_options}}
         </div>
-      {{/if_null}}
+      {{/prune_context}}
     {{/if}}
 
   </div>
@@ -116,7 +116,7 @@
     data-modal-class="modal-wide"
     data-original-title="Map more objects to this object"
     data-join-object-id="{{parent_instance.id}}"
-    data-join-object-type="{{parent_instance.constructor.shortName}}">
+    data-join-object-type="{{parent_instance.class.shortName}}">
     + Object
   </a>
 </li>

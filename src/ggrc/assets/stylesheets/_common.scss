@@ -59,6 +59,15 @@ h1, h2, h3, h4, h5, h6 {
   &.risk {
     color:$risk;
   }
+  &.objectives {
+    color:$objectives;
+  }
+  &.controls {
+    color:$controls;
+  }
+  &.entities {
+    color:$entities;
+  }
 }
 
 span.error {
@@ -177,6 +186,14 @@ blockquote {
   font-size: $f-regular;
   font-weight: bold;
   @include box-shadow(none);
+  .request-control & {
+    padding: 3px 6px;
+    line-height: 15px;
+  }
+  .response-control & {
+    padding: 3px 6px;
+    line-height: 15px;
+  }
   i {
     margin-top: 1px;
   }
@@ -233,6 +250,9 @@ blockquote {
     }
   }
   &.btn-mini {
+    font-size: $f-small;
+    line-height: 13px;
+    text-shadow: none;
     &.pending-ajax {
       background:$widgetHeaderBgnd image-url('ajax-loader.gif') no-repeat 5px 1px;
     }

@@ -150,9 +150,6 @@ class Control(
       )
   implementing_controls = association_proxy(
       'implementing_control_controls', 'control', 'ControlControl')
-  control_risks = db.relationship(
-      'ControlRisk', backref='control', cascade='all, delete-orphan')
-  risks = association_proxy('control_risks', 'risk', 'ControlRisk')
   object_controls = db.relationship(
       'ObjectControl', backref='control', cascade='all, delete-orphan')
   directive_controls = db.relationship(
@@ -173,7 +170,6 @@ class Control(
       'key_control',
       'kind',
       'means',
-      'risks',
       'sections',
       'objectives',
       'programs',
@@ -182,7 +178,6 @@ class Control(
       'principal_assessor',
       'secondary_assessor',
       PublishOnly('control_controls'),
-      PublishOnly('control_risks'),
       PublishOnly('control_sections'),
       PublishOnly('objective_controls'),
       PublishOnly('implementing_control_controls'),
@@ -219,7 +214,6 @@ class Control(
         orm.joinedload('secondary_assessor'),
         orm.subqueryload('control_controls'),
         orm.subqueryload('implementing_control_controls'),
-        orm.subqueryload('control_risks'),
         orm.subqueryload('control_sections'),
         orm.subqueryload('objective_controls'),
         orm.subqueryload_all('directive_controls.directive'),

@@ -3,10 +3,14 @@
 # Created By: silas@reciprocitylabs.com
 # Maintained By: silas@reciprocitylabs.com
 
+
 from .base import *
-from ggrc.models import Audit, Request
+from ggrc import db
+from ggrc.models import Audit, Program, Request
 from .base_row import *
+
 from collections import OrderedDict
+from datetime import datetime
 
 class RequestRowConverter(BaseRowConverter):
   model_class = Request
@@ -20,10 +24,11 @@ class RequestRowConverter(BaseRowConverter):
       self.add_warning('slug', "Request already exists and will be updated")
 
   def reify(self):
-    self.handle('objective_id', ObjectiveHandler)
+    self.handle('slug', SlugColumnHandler)
+    self.handle('objective_id', ObjectiveHandler, is_needed_later=True)
     self.handle('request_type', RequestTypeColumnHandler, is_required=True)
     self.handle('status', StatusColumnHandler, valid_states=Request.VALID_STATES, default_value='Draft')
-    self.handle_date('requested_on', is_required=True)
+    self.handle_date('requested_on', default_value=datetime.today())
     self.handle_date('due_on', is_required=True)
     self.handle_text_or_html('description')
     self.handle_text_or_html('test')
@@ -33,8 +38,9 @@ class RequestRowConverter(BaseRowConverter):
         person_must_exist=True)
 
   def save_object(self, db_session, **options):
-    audit = options.get('audit')
-    if audit:
+    audit_id = options.get('audit_id')
+    if audit_id:
+      audit = Audit.query.get(audit_id)
       self.obj.audit = audit
       self.obj.context = audit.context
       db_session.add(self.obj)
@@ -47,6 +53,7 @@ class RequestsConverter(BaseConverter):
   ])
 
   object_map = OrderedDict([
+    ('Request Code', 'slug'),
     ('Request Type', 'request_type'),
     ('Request Description', 'description'),
     ('Objective Code', 'objective_id'),
@@ -73,7 +80,8 @@ class RequestsConverter(BaseConverter):
     self.validate_code(attrs)
 
   def program(self):
-    return self.options['program']
+    program = Program.query.get(self.options['program_id'])
+    return program
 
   def do_export_metadata(self):
     yield self.metadata_map.keys()

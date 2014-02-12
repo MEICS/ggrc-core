@@ -1,20 +1,18 @@
 {{#list}}
-<li class="{{constructor.category}}" data-model="true" {{data 'model'}}>
+<li class="{{class.category}}" data-model="true" {{data 'model'}}>
   {{#using program=program}}
   <a href="{{program.viewLink}}#audit_widget" class="show-extended">
-    <div class="row-fluid">
-      <div class="span8">
+    <div>
+      <div>
         <span class="lhs-item">
           {{title}}
         </span>
       </div>
-      <div class="span1">
+      <div class="lhs-private">
+      <i class="grcicon-private" rel="tooltip" title="Private"></i>
         {{#is_private}}
           <i class="grcicon-private" rel="tooltip" title="Private"></i>
         {{/is_private}}
-      </div>
-      <div class="span2">
-        &nbsp;
       </div>
     </div>
   </a>

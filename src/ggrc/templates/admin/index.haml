@@ -31,7 +31,7 @@
             %i.grcicon-system-color
             %span Import Systems
         %li
-          %a{ 'href': "/systems/export" }
+          %a.export-link{ 'href': "/admin/export/system" }
             %i.grcicon-system-color
             %span Export Systems
         %li.divider
@@ -42,20 +42,32 @@
             %i.grcicon-process-color
             %span Import Processes
         %li
-          %a{ 'href': "/processes/export" }
+          %a.export-link{ 'href': "/admin/export/process" }
             %i.grcicon-process-color
             %span Export Processes
         %li.divider
         %li.title
           People
         %li
-          %a{ 'href': "/admin/import_people" }
+          %a{ 'href': "/admin/import/people" }
             %i.grcicon-user-black
             %span Import People
         %li
-          %a.export-link{ 'href': "/admin/export_people" }
+          %a.export-link{ 'href': "/admin/export/people" }
             %i.grcicon-user-black
             %span Export People
+            
+        %li.divider
+        %li.title
+          Help
+        %li
+          %a{ 'href': "/admin/import/help" }
+            %i.grcicon-help-black
+            %span Import Help
+        %li
+          %a.export-link{ 'href': "/admin/export/help" }
+            %i.grcicon-help-black
+            %span Export Help
 
         -#%li.title
           risks

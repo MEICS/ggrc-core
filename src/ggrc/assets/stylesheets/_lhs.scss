@@ -5,37 +5,8 @@
  * Maintained By: brad@reciprocitylabs.com
  */
 
-.area {
-  border-right:5px solid #444;
-  &.governance {
-    border-color:$governance;
-    .header-content {
-      border-color:$governance;
-    }
-  }
-  &.risk {
-    border-color:$risk;
-    .header-content {
-      border-color:$risk;
-    }
-  }
-  &.program {
-    border-color:$programs;
-    .header-content {
-      border-color:$programs;
-    }
-    
-  }
-  &.business {
-    border-color:$business;
-    .header-content {
-      border-color:$business;
-    }
-  }
-}
-
 .lhs-holder {
-  @include gradient-horizontal(#fff,#e1e1e1);
+  background: $treeListBgnd;
   //overflow-x:hidden;
 }
 
@@ -179,6 +150,27 @@
         }
       }
     }
+    li {
+      &.objectives {
+        a {
+          color: $objectives;
+        }
+      }
+    }
+    li {
+      &.controls {
+        a {
+          color: $controls;
+        }
+      }
+    }
+    li {
+      &.entities {
+        a {
+          color: $entities;
+        }
+      }
+    }
   }
   ul.sub-level,
   ul.sub-actions {
@@ -209,6 +201,8 @@
         background:#eee;
         span.lhs-item {
           display:block;
+          width: auto !important;
+          margin-right: 60px;
           @include oneline();
         }
         &.active {
@@ -223,6 +217,15 @@
         }
         .lhs-private {
           margin-right: 17px;
+          position: absolute;
+          top: 0px;
+          right: 20px;
+        }
+        .lhs-people {
+          margin-right: 17px;
+          position: absolute;
+          top: 0px;
+          right: 0px;
         }
       }
       &.view-more {
@@ -291,7 +294,7 @@
   background-repeat:no-repeat;
   background-position:2px 50%;
   @include opacity(0.6);
-  cursor:w-resize;
+  cursor:ew-resize;
   &:hover {
     @include opacity(1);
     background-color:#fff;
@@ -328,6 +331,14 @@
           font-weight:bold;
         }
       }
+    }
+    .add-more-objects {
+      padding-left:20px;
+      display:block;
+      line-height:30px;
+      font-size:13px;
+      border-bottom:1px solid #ddd;
+      color:$link;
     }
   }
   ul.internav {
@@ -429,6 +440,48 @@
         a {
           color:#fff;
           background-color:$programs;
+          background-image: image-url("grcicons/icons.png");
+          background-repeat: no-repeat;
+          @include background-size(368px 416px);
+          background-position: -270px -313px;
+
+        }
+      }
+    }
+    &.objectives {
+      li.active,
+      li:hover {
+        a {
+          color:#fff;
+          background-color:$objectives;
+          background-image: image-url("grcicons/icons.png");
+          background-repeat: no-repeat;
+          @include background-size(368px 416px);
+          background-position: -270px -313px;
+
+        }
+      }
+    }
+    &.controls {
+      li.active,
+      li:hover {
+        a {
+          color:#fff;
+          background-color:$controls;
+          background-image: image-url("grcicons/icons.png");
+          background-repeat: no-repeat;
+          @include background-size(368px 416px);
+          background-position: -270px -313px;
+
+        }
+      }
+    }
+    &.entities {
+      li.active,
+      li:hover {
+        a {
+          color:#fff;
+          background-color:$entities;
           background-image: image-url("grcicons/icons.png");
           background-repeat: no-repeat;
           @include background-size(368px 416px);

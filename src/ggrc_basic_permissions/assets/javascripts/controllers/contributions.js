@@ -43,9 +43,7 @@
   }, { 
     init: function(){
       this.init_context();
-      this.init_role();
       this.init_view();
-      this.init_data();
     },
 
     init_context: function(){
@@ -56,18 +54,6 @@
         }, this.options));
       }
       return this.context;
-    },
-
-    init_role: function(){
-      var self = this
-        ;
-      return this.options.option_model.findAll(
-        this.option_query, function(roles) {
-          can.each(roles, function(role){
-            if(role.name === "Auditor")
-              self.role = role;
-          });
-        });
     },
 
     init_view: function(){
@@ -88,102 +74,23 @@
       this.on();
       return deferred;
     },
-    init_data: function(){
-      if("userRole_id" in this.options){
-        var self = this
-          , join_model = this.options.join_model
-          , binding = join_model.findInCacheById(this.options.userRole_id)
-          , instance = binding.person.reify()
-          , email = instance.attr('email')
-          ;
-        // TODO: Figure out why input field clears the value
-        setTimeout(function(){
-          self.options.$target.find('input').val(email);
-          self.options.binding = binding;
-          self.options.instance = instance;
-        }, 100);
-      }
-    },
     set_value : function(){},
-    "input[data-lookup] focus" : function(el, ev) {
-      this.autocomplete(el);
-    },
     "input[data-lookup] change" : function(el, ev) {
       // Clear the user
       if(el.val() == ""){
-        this.options.instance = null;
+        this.options.instance.auditor = null;
       }
     },
     "a.btn[data-toggle='modal-submit'] click" : function(el, ev){
       var self = this
         , instance = this.options.instance
-        , binding = this.options.binding || null
-        , role = this.role
-        , ajd
-        , join
         ;
       
       function finish(){
         CMS.Models[self.options.scope].cache[self.options.scope_id].refresh();
         self.element.trigger("modal:success").modal_form("hide");
       }
-      function destroyBinding(){
-        if(binding === null)
-          return $.Deferred().resolve();
-        return binding.refresh().then(function(){
-          binding.destroy();
-        });
-      }
-      
-      if(instance == null){
-        ajd = destroyBinding().then(finish);
-        this.bindXHRToButton(ajd, el, "Saving, please wait...");
-        return;
-      }
-      join = this.get_new_join(role.id, role.scope, role.constructor.shortName);
-      ajd = join.save().then(destroyBinding).then(finish);
-      this.bindXHRToButton(ajd, el, "Saving, please wait...");
-    },
-    get_new_join: function(option_id, option_scope, option_type) {
-      var join_params = {}
-        , instance = this.options.instance
-        ;
-
-      join_params[this.options.option_attr] = {};
-      join_params[this.options.option_attr].id = option_id;
-      join_params[this.options.option_attr].type = option_type;
-      join_params[this.options.join_attr] = {};
-      join_params[this.options.join_attr].id = instance.id;
-      join_params[this.options.join_attr].type = instance.type;
-
-      $.extend(join_params, this.options.extra_join_fields);
-      return new (this.options.join_model)(join_params);
-    },
-    autocomplete_select : function(el, event, ui) {
-      var original_event;
-      if(ui.item) {
-        el.val(ui.item.email);
-        this.options.instance = ui.item;
-        return false;
-      } else {
-        original_event = event;
-
-        $(document.body).off(".autocomplete").one("modal:success.autocomplete", function(ev, new_obj) {
-          el.data("ui-autocomplete").options.select(event, {item : new_obj});
-        }).one("hidden", function() {
-          setTimeout(function() {
-            $(this).off(".autocomplete");
-          }, 100);
-        });
-        while(original_event = original_event.originalEvent) {
-          if(original_event.type === "keydown") {
-            //This selection event was generated from a keydown, so click the add new link.
-            el.data("ui-autocomplete").menu.active.find("a").click();
-            break;
-          }
-        }
-        return false;
-      }
+      this.saveAuditor(finish);
     },
   });
 
@@ -277,12 +184,12 @@
 
     ".object_column li click": "select_object",
     ".option_column li click": "select_option",
-    ".option_column li input[type='checkbox'] change": "change_option",
+    ".option_column li input[type='radio'] change": "change_option",
 
     init_bindings: function() {
       this.join_list.bind("change", this.proxy("update_active_list"));
       this.context.bind("selected_object", this.proxy("refresh_join_list"));
-      this.option_list.bind("change", this.proxy("update_option_checkboxes"));
+      this.option_list.bind("change", this.proxy("update_option_radios"));
     },
 
     init_view: function() {
@@ -379,7 +286,9 @@
       return this.options.option_model.findAll(
         $.extend(params, this.option_query),
         function(options) {
-          self.option_list.replace(options)
+          options = can.makeArray(options).sort(function(a,b){return a.id-b.id;});
+          options.unshift({name: "No access", id: 0, description: "This role allows a user access to the MyWork dashboard and applications Help files.", scope: "System"});
+          self.option_list.replace(options);
         });
     },
 
@@ -400,25 +309,27 @@
           $.extend({}, join_query),
           function(joins) {
             self.join_list.replace(joins);
-            self.update_option_checkboxes();
+            self.update_option_radios();
           });
       } else {
         return $.Deferred().resolve();
       }
     },
 
-    update_option_checkboxes: function() {
+    update_option_radios: function() {
       var self = this
         , $option_list = $(this.element).find('.option_column ul')
         ;
 
-      $option_list
-        .find('li[data-id] input[type=checkbox]')
-        .prop('checked', false);
-
+      if(this.join_list.length === 0){
+        setTimeout(function(){
+          $option_list.find('li[data-id=0] input[type=radio]').prop('checked', true);
+        }, 0);
+        return;
+      }
       this.join_list.forEach(function(join, index, list) {
         $option_list
-          .find('li[data-id=' + join[self.options.option_attr].id + '] input[type=checkbox]')
+          .find('li[data-id=' + join[self.options.option_attr].id + '] input[type=radio]')
           .prop('checked', true);
       });
     },
@@ -446,56 +357,59 @@
 
     change_option: function(el, ev) {
       var self = this
+        , li = el.closest('li')
+        , original_option = li.data('option');
+        ;
+      
+      $.map(li.parent().children(), function(el){
+        var el = $(el)
         , option = el.closest('li').data('option')
-        , join = this.find_join(option.id)
+        , join = self.find_join(option.id)
         ;
 
-      // FIXME: This is to trigger a page refresh only when data has changed
-      //   - currently only used for the Related widget (see the " hide" event)
-      //this._data_changed = true;
-
-      if (el.is(':checked')) {
-        // First, check if join instance already exists
-        if (join) {
-          // Ensure '_removed' attribute is false
-          join.attr('_removed', false);
-        } else {
-          // Otherwise, create it
-          join = this.get_new_join(
-              option.id, option.scope, option.constructor.shortName);
-          join.save().then(function() {
-            //join.refresh().then(function() {
-              self.join_list.push(join);
-              self.element.trigger("relationshipcreated", join);
-            //});
-          });
-        }
-      } else {
-        // Check if instance is still selected
-        if (join) {
-          // Ensure '_removed' attribute is false
-          if (join.isNew()) {
-            // It was created, then removed, so remove from list
-            join_index = this.join_list.indexOf(join);
-            if (join_index >= 0) {
-              this.join_list.splice(join_index, 1);
-            }
-          } else {
-            // FIXME: The data should be updated in bulk, and only when "Save"
-            //   is clicked.  Right now, it updates continuously.
-            //join.attr('_removed', true);
-            join.refresh().done(function() {
-              join.destroy().then(function() {
-                join_index = self.join_list.indexOf(join);
-                if (join_index >= 0) {
-                  self.join_list.splice(join_index, 1);
-                }
-                self.element.trigger("relationshipdestroyed", join);
-              });
+        if (option.id == original_option.id) {
+          // First, check if join instance already exists
+          if (join) {
+            // Ensure '_removed' attribute is false
+            join.attr('_removed', false);
+          } else if(option.id !== 0) {
+            // Otherwise, create it
+            join = self.get_new_join(
+                option.id, option.scope, option.constructor.shortName);
+            join.save().then(function() {
+                self.join_list.push(join);
+                self.refresh_object_list();
+                self.element.trigger("relationshipcreated", join);
             });
           }
+        } else {
+          // Check if instance is still selected
+          if (join) {
+            // Ensure '_removed' attribute is false
+            if (join.isNew()) {
+              // It was created, then removed, so remove from list
+              join_index = this.join_list.indexOf(join);
+              if (join_index >= 0) {
+                this.join_list.splice(join_index, 1);
+              }
+            } else {
+              // FIXME: The data should be updated in bulk, and only when "Save"
+              //   is clicked.  Right now, it updates continuously.
+              //join.attr('_removed', true);
+              join.refresh().done(function() {
+                join.destroy().then(function() {
+                  join_index = self.join_list.indexOf(join);
+                  if (join_index >= 0) {
+                    self.join_list.splice(join_index, 1);
+                  }
+                  self.refresh_object_list();
+                  self.element.trigger("relationshipdestroyed", join);
+                });
+              });
+            }
+          }
         }
-      }
+      });
     },
 
     // HELPERS
@@ -663,8 +577,10 @@
     $('body').on('click', '[data-toggle="audit-role-modal-selector"]', function(e) {
       var $this = $(this)
         , options = $this.data('modal-selector-options')
+        , instance_id = $this.data('object-id')
         , data_set = can.extend({}, $this.data())
         , object_params = $this.attr('data-object-params')
+        , scope = $this.data('modal-scope')
         ;
       data_set.params = object_params && JSON.parse(object_params.replace(/\\n/g, "\\n"));
       can.each($this.data(), function(v, k) {
@@ -686,6 +602,8 @@
 
       e.preventDefault();
       e.stopPropagation();
+      
+      options.instance = CMS.Models[scope].cache[instance_id];
       options.userRole_id = data_set.params.userRole_id;
       options.scope_id = data_set.params.scope_id;
       GGRC.Controllers.AuditRoleSelector.launch($this, options)

@@ -1,0 +1,60 @@
+-extends 'layouts/base.haml'
+
+-block extra_javascript
+  =super()
+  GGRC.permissions = ={ permissions_json()|safe };
+  GGRC.current_user = ={ current_user_json()|safe };
+  GGRC.config = ={ config_json()|safe };
+  var request_ids = ={ created_updated_request_ids};
+  var audit_id = ={audit_id};
+
+-block body
+  .flash
+
+  %div{ 'style' : 'position:relative;text-align:center;margin-top:20%;width:100%' }
+    %h2 Performing post-import gdrive folder maintenance. Please wait.
+      .spinner{ 'style' : 'position:relative;margin-left:auto;margin-right:auto;width:100px'}
+
+  :javascript 
+    !(function() {
+      $(function() {
+        $.when(
+          CMS.Models.Audit.findOne({id : window.audit_id})
+          , CMS.Models.Request.findAll({id__in : window.request_ids.join(",")})
+        ).then(function(audit, reqs) {
+          var ctl = $(document.body).control(GGRC.Controllers.GDriveWorkflow);
+          return audit.program.reify().refresh()
+          .then(function(program) {
+            return $.when(
+              program.get_binding("folders").refresh_instances()
+              , audit.get_binding("folders").refresh_instances()
+            );
+          }).then(function() {
+            return can.reduce(
+              reqs
+              , function(dfd, req) {
+                return dfd.then(function() {
+                  return $.when(
+                    req.get_binding("folders").refresh_instances()
+                    , req.objective ? req.objective.reify().refresh() : $.when({})
+                  );
+                }).then(function(req_folders) {
+                  if(req_folders.length) {
+                    //update case.  Request has already been assigned a folder
+                    return ctl.update_request_folder(CMS.Models.Request, {}, req);
+                  } else {
+                    return ctl.link_request_to_new_folder_or_audit_folder(CMS.Models.Request, {}, req);
+                  }
+                });
+              }
+              , ctl.create_folder_if_nonexistent(audit)
+            );
+          });
+        }).done(function() {
+          window.location.assign(can.deparam(window.location.search.substr(1)).return_to);
+        });
+      });
+    })();
+
+    new Spinner({ left : "50%"}).spin($(".spinner")[0]);
+

@@ -17,7 +17,6 @@ Feature: Rather than have clients keep a list of the endpoint URLs for
       | Control            |
       | ControlCategory    |
       | ControlAssertion   |
-      | ControlRisk        |
       | DataAsset          |
       | Directive          |
       | DirectiveControl   |
@@ -49,9 +48,6 @@ Feature: Rather than have clients keep a list of the endpoint URLs for
       | DocumentationResponse    |
       | InterviewResponse        |
       | PopulationSampleResponse |
-      | Risk               |
-      | RiskyAttribute     |
-      | RiskRiskyAttribute |
       | Section            |
       | SectionObjective   |
       | SystemOrProcess    |

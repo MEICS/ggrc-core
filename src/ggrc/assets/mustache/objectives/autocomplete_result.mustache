@@ -1,4 +1,4 @@
-{{#this}}
+{{#items}}
 <li class="ui-menu-item" {{data 'ui-autocomplete-item'}}>
   <a href="javascript://">
     {{title}}
@@ -11,8 +11,8 @@
     </div>
   </div>
 </li>
-{{/this}}
-{{^this}}
+{{/items}}
+{{^items}}
   {{#is_allowed "create" "Objective" context=null}}
   <li data-ui-autocomplete-item="">
     No results
@@ -22,7 +22,7 @@
     No results
   </li>
   {{/is_allowed}}
-{{/this}}
+{{/items}}
 {{#is_allowed "create" "Objective" context=null}}
 <li class="ui-menu-item add-new" data-ui-autocomplete-item="">
   <a data-object-plural="objectives" data-modal-class="modal-wide" href="javascript://" data-object-singular="Objective" data-toggle="modal-ajax-form" data-modal-reset="reset" >

@@ -38,7 +38,5 @@ Feature: Some resources can be related to Person resources
       | Program         |
       | Project         |
       #| Response        |
-      | Risk            |
-      | RiskyAttribute  |
       | System          |
       | Process         |

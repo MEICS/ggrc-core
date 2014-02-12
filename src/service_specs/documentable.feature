@@ -36,7 +36,5 @@ Feature: Some resources can be related to Document resources
       | Product           |
       | Program           |
       | Project           |
-      | Risk              |
-      | RiskyAttribute    |
       | System            |
       | Process           |

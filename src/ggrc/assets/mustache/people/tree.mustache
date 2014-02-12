@@ -6,14 +6,14 @@
 }}
 
 
-  <li class="tree-item" data-object-id="{{instance.id}}" data-object-type="{{instance.constructor.table_singular}}">
+  <li class="tree-item" data-object-id="{{instance.id}}" data-object-type="{{instance.class.table_singular}}">
     <div class='item-main' {{data 'model'}}>
       <a href="javascript://" class="openclose">
         <div class='row-fluid'>
           <div class='span12'>
             <div class='item-data'>
               <div class='tree-title-area'>
-                <i class="grcicon-{{instance.constructor.table_singular}}-color"></i>
+                <i class="grcicon-{{instance.class.table_singular}}-color"></i>
                 {{{render '/static/mustache/people/popover.mustache' person=instance}}}
                 {{#infer_roles instance}}
                   <span class="role">
@@ -35,7 +35,7 @@
           <div class="span6">
             {{#if instance.viewLink}}
               <a href="{{instance.viewLink}}" class="info-action">
-                View {{instance.constructor.title_singular}}
+                View {{instance.class.title_singular}}
                 <i class="grcicon-goto"></i>
               </a>
             {{/if}}
@@ -74,14 +74,14 @@
 
       {{#if draw_children}}
         {{#if child_options.length}}
-          {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
+          {{#prune_context}} {{! this line is just chopping the context stack down to one element}}
             <div class="inner-tree">
               <h6>Mapped Objects ({{child_count}})</h6>
               {{#child_options}}
                 <ul class="tree-structure new-tree" {{data 'options'}} {{ (el) -> el.cms_controllers_tree_view(el.data("options")) }}></ul>
               {{/child_options}}
             </div>
-          {{/if_null}}
+          {{/prune_context}}
         {{/if}}
       {{/if}}
 

@@ -279,7 +279,7 @@ $(function() {
               }
             , Audit : { 
               mapping: "audits"
-              , allow_mapping : false
+              , allow_mapping : true
               , draw_children : true
               , show_view : GGRC.mustache_path + "/audits/tree.mustache"
               , footer_view : GGRC.mustache_path + "/audits/tree_footer.mustache"
@@ -489,10 +489,14 @@ $(function() {
           , widget_name: function() {
               var $objectArea = $(".object-area");
               if ( $objectArea.hasClass("dashboard-area") || object_class.title_singular === "Person" ) {
-                if (/dashboard/.test(window.location))
+                if (/dashboard/.test(window.location)) {
+                  if (far_model.title_plural === 'Sections') {
+                    return "My Sections / Clauses";
+                  }
                   return "My " + far_model.title_plural;
-                else
+                } else {
                   return far_model.title_plural;
+                }
               } else if (far_model.title_plural === "Audits") {
                 return "Mapped Audits <small>BETA</small>";
               } else {
@@ -507,7 +511,7 @@ $(function() {
               , draw_children: false
               , parent_instance: object
               , model: model_name
-              , list_loader: can.proxy(list_loader, "refresh_list")
+              , list_loader: $.proxy(list_loader, "refresh_list")
             }
         }
       ;

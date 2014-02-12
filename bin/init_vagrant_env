@@ -1,0 +1,5 @@
+export DEV_PREFIX=/vagrant-dev
+
+echo "Initializing environment"
+cd /vagrant
+source /vagrant/bin/init_env

@@ -68,7 +68,7 @@ can.Model.Cacheable("CMS.Models.Person", {
     this._super.apply(this, arguments);
     //H/T to Sebastian Porto for the email validation regex
     this.validatePresenceOf("email");
-    this.validateFormatOf("email", /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/);
+    this.validateFormatOf("email", /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])/);
   }
 }, {
   display_name : function() {

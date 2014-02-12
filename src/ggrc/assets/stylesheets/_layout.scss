@@ -52,13 +52,13 @@
   width:200px;
   height:445px;
   position:fixed;
-  top:85px;
+  top:80px;
   overflow-y:auto;
   overflow-x:hidden;
 }
 .object-area {
   position:fixed;
-  top:85px;
+  top:80px;
   padding-top:30px;
   background:#ddd;
   @include box-shadow(inset 0 0 12px #bbb);

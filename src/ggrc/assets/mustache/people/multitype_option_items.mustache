@@ -18,19 +18,17 @@
                   {{#if instance.email}}{{instance.email}}{{/if}}
                 </span>
                 {{#if mappings.length}}
-                {{#if_result_has_direct_mappings bindings_compute selected_object}}
-                <span class="mapped pull-right">Mapped</span>
-                {{else}}
+                {{#result_direct_mappings bindings_compute selected_object}}
                 <a class="mapped mapped-ext pull-right" data-popover-trigger="sticky-hover" data-sticky-popover="true" href="javascript://" target="_blank">
                   <div class='popover-data-title'>
-                    <b>{{instance.title}}</b> {{instance.constructor.title_singular}} is mapped through:
+                    <b>{{instance.title}}</b> {{instance.class.title_singular}} is mapped through:
                   </div>
                   <div class='popover-data-content'>
                     {{{render '/static/mustache/selectors/multitype_option_mappings_popover.mustache' result=. parent_instance=selected_object}}}
                   </div>
-                  Mapped (ext)
+                  Mapped ({{mappings_type}})
                 </a>
-                {{/if_result_has_direct_mappings}}
+                {{/result_direct_mappings}}
                 {{/if}}
               </div>
             </div>

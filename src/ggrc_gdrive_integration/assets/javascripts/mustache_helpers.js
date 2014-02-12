@@ -46,7 +46,7 @@ function google_plus() {
       }
 
       // Attempt to authenticate user
-      gapi_authorize(['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/userinfo.email'])
+      GGRC.Controllers.GAPI.authorize(['https://www.googleapis.com/auth/plus.login', 'https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/userinfo.email'])
       .fail(function() {
         auth.reject('auth failed');
       })

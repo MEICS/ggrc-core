@@ -42,8 +42,10 @@
     $governance: #075294;  // WCAG AAA
     $business: #3a8917;  // WCAG AAA
     $risk: #731a46;  // WCAG AAA
-    $entities: #241254; // WCAG AAA
+    $entities: #a8491a; // WCAG AAA
     $programs: #391d7d; // WCAG AAA
+    $objectives: #2b8ccc;
+    $controls: #243ea4;
 
   // default colors
     $white: #fff;
@@ -115,6 +117,13 @@
   $rqAccepted: #d1fcb5;
   $rqStarted: #ffffbe;
   $rqWarning: #ffcebe;
+  $rqRequest: #ffffbe;
+  $rqAmmend: #ffffbe;
+  $rqRespond: #cbeaff;
+  $rqUpdate: #cbeaff;
+  
+  $rqAssigned: #ffffbe;
+  $rqSubmitted: #cbeaff;
 
 // mixins
 

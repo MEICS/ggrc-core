@@ -29,7 +29,6 @@ Feature: Many resources can be "categorized". This feature will exercise
       | resource_type | category_property | categorizable_property | category_type    |
       | Control       | categories        | controls               | ControlCategory  |
       | Control       | assertions        | controls               | ControlAssertion |
-      #| Risk          | categories        | risks                  | RiskCategory     |
 
   Scenario: Control categories and assertions are independent
     Given a new "ControlCategory" named "a_control_category"

@@ -1,0 +1,7 @@
+{{#is_allowed 'create' model.shortName context='any'}}
+<li class="add-new" data-ui-autocomplete-item="">
+<a href="{{ggrc_config_value "RISK_ASSESSMENT_URL"}}/riskForm" target="_blank">
+    + Create New
+</a>
+</li>
+{{/is_allowed}}

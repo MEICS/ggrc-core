@@ -1081,7 +1081,7 @@
                     || (mapping[this.object_attr].type === 'Context'
                         || (mapping[this.object_attr].reify()
                             && mapping[this.object_attr].reify().constructor === object_model)
-                        && mapping[this.object_attr].id === binding.instance[this.object_attr].id)));
+                        && mapping[this.object_attr].id === binding.instance.id)));
       }
 
     , filter_and_insert_instances_from_mappings: function(binding, mappings) {
@@ -1225,13 +1225,13 @@
 
         model.bind("destroyed", function(ev, mapping) {
           if (mapping instanceof model)
-            self.remove_instance_from_mapping(binding, mapping);
+            that.remove_instance_from_mapping(binding, mapping);
         });
 
         //  FIXME: This is only needed in DirectListLoader, right?
         model.bind("orphaned", function(ev, mapping) {
           if (mapping instanceof model)
-            self.remove_instance_from_mapping(binding, mapping);
+            that.remove_instance_from_mapping(binding, mapping);
         });
       }
 

@@ -9,7 +9,7 @@
             /{{#using reified_audit=instance.audit}}{{#with_mapping 'folders' reified_audit}}{{folders.0.instance.title}}{{/with_mapping}}{{/using}}/{{folders.0.instance.title}}</a>
           <span></span>
           {{else}}
-            No evidence folder for this {{instance.constructor.title_singular}}.
+            No evidence folder for this {{instance.class.title_singular}}.
             {{#using audit=instance.audit}}
             {{#is_allowed 'create' 'ObjectFolder' context=instance.context}}
             <a href="javascript://" class="create-folder" {{#instance}}{{data 'model'}}{{/instance}}>Create one now</a>
@@ -18,7 +18,7 @@
           {{/if}}
         {{else}}
           {{! This is a failure state for with_mapping, if something in the mapping doesn't refresh properly }}
-          The GDrive folder for this {{instance.constructor.title_singular}} could not be accessed.
+          The GDrive folder for this {{instance.class.title_singular}} could not be accessed.
         {{/with_mapping}}
       </div>
     </div>

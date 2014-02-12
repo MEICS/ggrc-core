@@ -5,7 +5,7 @@
     Maintained By: brad@reciprocitylabs.com
 }}
 
-  <li class="tree-item governance" data-object-id="{{instance.id}}" data-object-type="{{instance.constructor.table_singular}}">
+  <li class="tree-item governance" data-object-id="{{instance.id}}" data-object-type="{{instance.class.table_singular}}">
     <div class="item-main" {{#instance}}{{data 'model'}}{{/instance}}>
       <a href="javascript://" class="openclose">
         <div class="row-fluid">
@@ -32,9 +32,9 @@
             <div class="counter">
               <i class="grcicon-section-black"></i>
                 {{#if expanded}}
-                {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
+                {{#prune_context}}
                   {{child_count}}        
-                {{/if_null}}
+                {{/prune_context}}
                 {{else}}
                   {{instance.sections.length}}
                 {{/if expanded}}
@@ -53,7 +53,7 @@
           <div class="span6">
           {{#if instance.viewLink}}
             <a href="{{instance.viewLink}}" class="info-action">
-              View {{instance.constructor.title_singular}}
+              View {{instance.class.title_singular}}
               <i class="grcicon-goto"></i>
             </a>
           {{/if}}
@@ -88,16 +88,16 @@
           </div>
         {{/instance.description}}
 
-        {{{render '/static/mustache/base_objects/mappings_detail.mustache' result=result parent_instance=parent_instance}}}
+        {{{renderLive '/static/mustache/base_objects/mappings_detail.mustache' result=result parent_instance=parent_instance}}}
 
-        {{{render '/static/mustache/base_objects/contacts.mustache' instance=instance}}}
+        {{{renderLive '/static/mustache/base_objects/contacts.mustache' instance=instance}}}
         {{#instance.url}}
         <div class="row-fluid">
           <div class="span6">
             <div class="tree-info">
               {{! FIXME: Add tree item - should be Contract OR Regulation OR Policy OR Standard NOT Directive }}
               <strong>URL:</strong>
-              <a class="url" href="{{schemed_url instance.url}}" data-popover-trigger="sticky-hover" data-sticky-popover="true" data-content="{{render '/static/mustache/pbc/iframe_tooltip.mustache' url=instance.url}}" target="_blank">
+              <a class="url" data-popover-trigger="sticky-hover" data-sticky-popover="true" data-content="{{renderLive '/static/mustache/pbc/iframe_tooltip.mustache' url=instance.url}}" href="{{schemed_url instance.url}}" target="_blank">
                 {{instance.url}}
               </a>
             </div>
@@ -107,14 +107,14 @@
       </div>
       
       {{#if draw_children}}
-        {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
+        {{#prune_context}} {{! this line is just chopping the context stack down to one element}}
           <div class="inner-tree">
-            <h6>{{#if_equals instance.constructor.model_singular 'Contract'}}Clauses{{else}}Sections{{/if_equals}} ({{child_count}}) {{^children_drawn}}<span {{attach_spinner '{ "radius": 4, "length": 4, "width": 2 }' 'display:inline-block; left: 15px; top: -4px' }}> - Loading... </span>{{/children_drawn}}</h6>
+            <h6>{{#if_equals instance.class.model_singular 'Contract'}}Clauses{{else}}Sections{{/if_equals}} ({{child_count}}) {{^children_drawn}}<span {{attach_spinner '{ "radius": 4, "length": 4, "width": 2 }' 'display:inline-block; left: 15px; top: -4px' }}> - Loading... </span>{{/children_drawn}}</h6>
             {{#child_options}}
               <ul class="tree-structure new-tree" {{data 'options'}} {{ (el) -> el.cms_controllers_tree_view(el.data("options")) }}></ul>
             {{/child_options}}
           </div>
-        {{/if_null}}
+        {{/prune_context}}
       {{/if}}
 
     </div>

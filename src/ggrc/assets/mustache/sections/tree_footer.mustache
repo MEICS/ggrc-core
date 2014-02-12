@@ -6,24 +6,24 @@
 }}
 
 {{#if allow_mapping_or_creating}}
-{{#if_match parent_instance.constructor.shortName '^(Directive|Regulation|Policy|Standard|Contract)$'}}
+{{#if_instance_of parent_instance 'Directive'}}
 {{#if allow_creating}}
 {{#is_allowed 'create' model.shortName context=null}}
-{{#if_match parent_instance.constructor.shortName '^(Contract|Standard|Policy|Regulation)$'}}
+{{#if_instance_of parent_instance 'Contract|Standard|Policy|Regulation'}}
 <li class="tree-footer tree-item tree-item-add">
   <div class="row-fluid">
     <div class="span12 section-expandable">
       <a href="javascript://" class="section-add">
-        + {{#if_equals parent_instance.constructor.shortName 'Contract'}}Clause{{else}}Section{{/if_equals}}
+        + {{#if_instance_of parent_instance 'Contract'}}Clause{{else}}Section{{/if_instance_of}}
       </a>
       <span class="section-expander">
-        <a href="javascript://" class="section-create" data-toggle="modal-ajax-form" data-modal-reset="reset" data-dirty="#regulations, #combo" data-route="regulations" data-modal-class="modal-wide" data-object-singular="Section" data-object-plural="sections" data-object-singular-override="{{#if_equals parent_instance.constructor.shortName 'Contract'}}Clause{{/if_equals}}" data-object-params='{ "directive": {{parent_instance.id}} }'>
+        <a href="javascript://" class="section-create" data-toggle="modal-ajax-form" data-modal-reset="reset" data-dirty="#regulations, #combo" data-route="regulations" data-modal-class="modal-wide" data-object-singular="Section" data-object-plural="sections" data-object-singular-override="{{#if_instance_of parent_instance 'Contract'}}Clause{{/if_instance_of}}" data-object-params='{ "directive": {{parent_instance.id}} }'>
           <i class="grcicon-add-black"></i>
-          Create {{#if_equals parent_instance.constructor.shortName 'Contract'}}Clause{{else}}Section{{/if_equals}}
+          Create {{#if_instance_of parent_instance 'Contract'}}Clause{{else}}Section{{/if_instance_of}}
         </a>
         &nbsp;
         &nbsp;
-        {{#if_equals parent_instance.constructor.shortName 'Contract'}}
+        {{#if_instance_of parent_instance 'Contract'}}
         <a href="{{parent_instance.viewLink}}/import_clauses?return_to={{param_current_location}}" class="section-import">
           <i class="grcicon-imp-exp"></i>
           Import Clauses
@@ -49,7 +49,7 @@
           Export Sections
         </a>
         {{/if}}
-        {{/if_equals}}
+        {{/if_instance_of}}
       </span>
     </div>
   </div>
@@ -62,7 +62,7 @@
 
 {{#if allow_mapping}}
 {{#is_allowed_to_map parent_instance model.shortName}}
-{{#if_match parent_instance.constructor.shortName '^(Contract|Standard|Policy|Regulation)$'}}
+{{#if_instance_of parent_instance 'Contract|Standard|Policy|Regulation'}}
 <li class="tree-footer tree-item tree-item-add">
   <div class="row-fluid">
     <div class="span12">
@@ -74,15 +74,15 @@
         data-join-mapping="{{mapping}}"
         data-join-option-type="{{model.shortName}}"
         data-join-object-id="{{parent_instance.id}}"
-        data-join-object-type="{{parent_instance.constructor.shortName}}"
-        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.constructor.title_singular 'Object'}}">
-        + {{#if_equals parent_instance.constructor.shortName 'Contract'}}Clause{{else}}Section{{/if_equals}}
+        data-join-object-type="{{parent_instance.class.shortName}}"
+        data-original-title="Map {{firstnonempty title_singular model.title_singular 'Object'}} to this {{firstnonempty parent_instance.class.title_singular 'Object'}}">
+        + {{#if_instance_of parent_instance 'Contract'}}Clause{{else}}Section{{/if_equals}}
       </a>
     </div>
   </div>
 </li>
-{{/if_match}}
+{{/if_instance_of}}
 {{/is_allowed_to_map}}
 {{/if}}
-{{/if_match}}
+{{/if_instance_of}}
 {{/if}}

@@ -1,0 +1,19 @@
+{{#is_allowed "read" "RiskAssessment" context="any"}}
+<h2 class="risk">Risk</h2>
+<ul class="top-level">
+  <li class="risk accordion-group" data-tooltip-view="null" data-template="/static/mustache/dashboard/lhn_search_result_risk_assessments.mustache" data-actions="/static/mustache/dashboard/lhn_search_actions_risk_assessments.mustache" data-model-name="RiskAssessment">
+    <a class="risk" href="javascript://" data-object-singular="RiskAssessment" data-parent=".top-level">
+      <i class="grcicon-risk_assessment-color"></i>
+      Risk Assessments
+      <small>(<span class="item-count"></span>)</small>
+    </a>
+    <div class="content">
+      <ul class="sub-level"></ul>
+      <ul class="sub-actions"></ul>
+    </div>
+  </li>
+  {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Threat" li_class="risk"}}}
+  {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Vulnerability" li_class="risk"}}}
+  {{{renderLive '/static/mustache/dashboard/lhn_search.mustache' type="Template" li_class="risk"}}}
+</ul>
+{{/is_allowed}}

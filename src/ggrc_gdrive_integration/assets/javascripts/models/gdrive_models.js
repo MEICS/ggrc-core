@@ -94,37 +94,10 @@ var gdrive_findAll = function(extra_params, extra_path) {
   };
 };
 
-var gapi_request_with_auth = GGRC.gapi_request_with_auth = function gapi_request_with_auth(params) {
-  return window.gapi_authorize(params.scopes).then(function() {
-    var dfd = new $.Deferred();
-    var cb = params.callback;
-    var check_auth = function(result) {
-      var args = can.makeArray(arguments);
-      args.unshift(dfd);
-      if(result.error && result.error.code === 401) {
-        doGAuth(); //changes oauth_dfd to a new deferred
-        params.callback = cb;
-        window.gapi_authorize(params.scopes).then(can.proxy(gapi_request_with_auth, window, params))
-        .then(
-          function() {
-            dfd.resolve.apply(dfd, arguments);
-          }, function() {
-            dfd.reject.apply(dfd, arguments);
-          });
-      } else {
-        cb.apply(window, args);
-      }
-    };
-    params.callback = check_auth;
-    if(typeof params.path === "function") {
-      params.path = params.path();
-    }
-    gapi.client.request(params);
-    return dfd.promise();
-  });
-}
-
-
+var gapi_request_with_auth;
+$(function() {
+  gapi_request_with_auth = GGRC.gapi_request_with_auth;
+});
 /**
   GDrive files not including folders.  Folders are also files in GDrive,
   with a particular MIME type, but we distinguish between them here as
@@ -231,7 +204,7 @@ can.Model.Cacheable("CMS.Models.GDriveFile", {
   }
   , refresh : function(params) {
     return this.constructor.findOne({ id : this.id })
-    .then(can.proxy(this.constructor, "model"))
+    .then($.proxy(this.constructor, "model"))
     .done(function(d) {
       d.updated();
       //  Trigger complete refresh of object -- slow, but fixes live-binding
@@ -244,6 +217,9 @@ can.Model.Cacheable("CMS.Models.GDriveFile", {
   }
   , copyToParent : function(parent) {
     return this.constructor.copyToParent(this, parent);
+  }
+  , removeFromParent : function(parent) {
+    return this.constructor.removeFromParent(this, parent.id || parent);
   }
 });
 
@@ -291,12 +267,6 @@ CMS.Models.GDriveFile("CMS.Models.GDriveFolder", {
   }
   , from_id : function(id) {
     return new this({ id : id });
-  }
-  , model : function(params) {
-    if(params.url) {
-      params.selfLink = "#";
-    }
-    return this._super.apply(this, arguments);
   }
   //Note that when you get the file and folder objects back from the server
   // the current user's permission on the file comes back in the 'userPermission'
@@ -455,18 +425,44 @@ can.Model.Join("CMS.Models.ObjectFolder", {
 
   , model : function(params) {
     if(typeof params === "object") {
-      params.folder = {
-        id : params.folder_id
-        , type : "GDriveFolder"
-        , parentfolderid : params.parent_folder_id
-        , href : "/drive/v2/files/" + params.folder_id
-      };
+      if(params.folder_id) {
+
+        params.folder = new CMS.Models.GDriveFolder({
+          id : params.folder_id
+          , href : "/drive/v2/files/" + params.folder_id
+        }).stub();
+      }
     }
     return this._super(params);
   }
 }, {
 
-  serialize : function(attr) {
+  setup : function() {
+    // var update_folder = can.proxy(function() {
+    //   this.attr("folder", new CMS.Models.GDriveFolder({
+    //     id : this.folder_id
+    //     , parentfolderid : this.parent_folder_id
+    //     , href : "/drive/v2/files/" + this.folder_id
+    //   }));
+    // }, this);
+    this._super.apply(this, arguments);
+    // this.bind("updated", update_folder);
+    // this.bind("created", update_folder);
+  }
+
+  , init : function() {
+    this._super.apply(this, arguments);
+    if(!this.folder && this.folder_id) {
+      this.attr("folder", new CMS.Models.GDriveFolder({
+        id : this.folder_id
+        , parentfolderid : this.parent_folder_id
+        , href : "/drive/v2/files/" + this.folder_id
+      }));
+    }
+
+  }
+
+  , serialize : function(attr) {
     var serial;
     if(!attr) {
       serial = this._super.apply(this, arguments);
@@ -479,6 +475,7 @@ can.Model.Join("CMS.Models.ObjectFolder", {
     }
     return this._super.apply(this, arguments);
   }
+
 });
 
 can.Model.Join("CMS.Models.ObjectFile", {
@@ -499,13 +496,11 @@ can.Model.Join("CMS.Models.ObjectFile", {
   }
 
   , model : function(params) {
-    if(typeof params === "object") {
-      params.file = {
+    if(typeof params === "object" && params.file_id) {
+      params.file = new CMS.Models.GDriveFile({
         id : params.file_id
-        , type : "GDriveFile"
-        , parentfolderid : params.folder_id
         , href : "/drive/v2/files/" + params.file_id
-      };
+      }).stub();
     }
     return this._super(params);
   }

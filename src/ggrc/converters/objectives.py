@@ -125,7 +125,9 @@ class ObjectivesConverter(BaseConverter):
     return parent_type.query.get(self.options['parent_id'])
 
   def parent_type_string(self):
-    return self.options.get('parent_type').__name__
+    # must be general enough to handle Directives and Programs
+    # while being sure to give a directive's sub-type
+    return self.parent_object().__class__.__name__
 
   def directive_kind(self):
     parent_object = self.parent_object()

@@ -10,6 +10,7 @@ from ggrc.builder import simple_property
 from ggrc.models.context import Context
 from ggrc.models.mixins import Base, Described
 from sqlalchemy.orm import backref
+from .contributed_roles import DECLARED_ROLE, get_declared_role
 
 class Role(Base, Described, db.Model):
   """A user role. All roles have a unique name. This name could be a simple
@@ -31,7 +32,11 @@ class Role(Base, Described, db.Model):
 
   @simple_property
   def permissions(self):
-    permissions = json.loads(self.permissions_json) or {}
+    if self.permissions_json == DECLARED_ROLE:
+      declared_role = get_declared_role(self.name)
+      permissions = declared_role.permissions
+    else:
+      permissions = json.loads(self.permissions_json) or {}
     # make sure not to omit actions
     for action in ['create', 'read', 'update', 'delete']:
       if action not in permissions:
@@ -164,3 +169,36 @@ class RoleImplication(Base, db.Model):
       role=self.role.display_name,
       context=context_display_name,
     )
+
+class ContextImplication(Base, db.Model):
+  __tablename__ = 'context_implications'
+
+  context_id = db.Column(
+      db.Integer(), db.ForeignKey('contexts.id'), nullable=True)
+  source_context_id = db.Column(
+      db.Integer(), db.ForeignKey('contexts.id'), nullable=True)
+
+  context = db.relationship(
+      'Context',
+      uselist=False,
+      foreign_keys=[context_id],
+      )
+  source_context = db.relationship(
+      'Context',
+      uselist=False,
+      foreign_keys=[source_context_id],
+      )
+
+  def _display_name(self):
+    if self.source_context:
+      source_context_display_name = self.source_context.display_name
+    else:
+      source_context_display_name = 'Default Context'
+    if self.context:
+      context_display_name = self.context.display_name
+    else:
+      context_display_name = 'Default Context'
+    return '{source_context} -> {context}'.format(
+        source_context=source_context_display_name,
+        context=context_display_name,
+        )

@@ -34,14 +34,14 @@
     <div class="tier-2-info item-content">
       <div class="tier-2-info-content">
         {{#if draw_children}}
-          {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
+          {{#prune_context}} {{! this line is just chopping the context stack down to one element}}
             <div class="inner-tree">
               {{#child_options}}
                 <h6>{{model.title_plural}} ({{list.length}})</h6>
                 <ul class="tree-structure new-tree" data-object-type="{{ model.shortName }}" {{data 'options'}} {{ (el) -> el.cms_controllers_tree_view(el.data("options")) }}></ul>
               {{/child_options}}
             </div>
-          {{/if_null}}
+          {{/prune_context}}
         {{/if}}
         
       </div>

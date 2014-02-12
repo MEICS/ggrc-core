@@ -282,13 +282,11 @@
 
 .header-content {
   background: $white;
-  border-top:4px solid #444;
-  border-bottom:1px solid #ccc;
   z-index:3;
   h1 {
     line-height: 36px;
     padding-left:20px;
-    padding:6px 5px 4px 20px;
+    padding:7px 5px 3px 20px;
     span.private {
       i {
         margin-top:11px;

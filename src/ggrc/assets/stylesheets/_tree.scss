@@ -11,7 +11,7 @@ ul.new-tree {
     cursor: pointer;
     .row-fluid {
       &:hover {
-        background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+        background:#eee image-url("bgnds/hover.png") no-repeat 50% bottom;
         @include background-size(30px 6px);
         .counter {
           @include opacity(1);
@@ -245,7 +245,7 @@ ul.new-tree {
   a.simple-link {
     .row-fluid {
       &:hover {
-        background:#e0f4ff;
+        background:#eee;
         .tree-title-area {
           font-weight:bold;
         }
@@ -409,6 +409,69 @@ ul.new-tree {
         }
       }
     }
+    &.responses-list {
+      .response-control {
+        text-align: right;
+        padding-right: 5px;
+        .rejected {
+          text-transform: uppercase;
+          color: $red;
+        }
+      }
+    }
+    &.request-list {
+      &.request-redesign {
+        .item-data {
+          padding-left: 5px;
+          @include clearfix();
+          .type {
+            float: left;
+            width: 15%;
+            .grcicon-carot {
+              margin-left: -6px;
+            }
+          }
+          .tree-title-area {
+            float: left;
+            width: 85%;
+          }
+        }
+        .accepted {
+          text-transform: uppercase;
+          color: $green;
+        }
+        .controls {
+          color: $controls;
+          border: none;
+          background: none;
+          padding: 0;
+          &.danger {
+            color: $red;
+          }
+          &:hover {
+            text-decoration: underline;
+          }
+          &:focus {
+            outline: none;
+          }
+        }
+        .control-wrap {
+          @include clearfix();
+          padding-right: 5px;
+        }
+        .date {
+          color: $gray;
+          float: left;
+          width: 30%;
+        }
+        .request-control {
+          float: left;
+          width: 66%;
+          margin-left: 4%;
+          text-align: right;
+        }
+      }
+    }
   }
   &.rq-colors {
     li.tree-item {
@@ -439,7 +502,7 @@ ul.new-tree {
             .row-fluid {
               background: #fafafa;
               &:hover {
-                background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+                background:#eee image-url("bgnds/hover.png") no-repeat 50% bottom;
                 @include background-size(30px 6px);
               }
             }
@@ -450,7 +513,7 @@ ul.new-tree {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqDraft,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -472,15 +535,7 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
-                }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
-                }
+                border-bottom: none;
               }
             }
           }
@@ -490,7 +545,7 @@ ul.new-tree {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqStarted,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -512,25 +567,17 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
-                }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
-                }
+                border-bottom: none;
               }
             }
           }
         }
       }
-      &.rq-responded {
+      &.rq-responded-request {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqRespond,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -538,8 +585,8 @@ ul.new-tree {
             }
           }
           .row-fluid {
-            background: $rqStarted;
-            border-bottom: 1px solid #f0f076;
+            background: $rqRespond;
+            border-bottom: 1px solid #86c5ef;
             .tree-title-area {
               color: $darkText;
             }
@@ -552,15 +599,7 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
-                }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
-                }
+                border-bottom: none;
               }
             }
           }
@@ -570,7 +609,7 @@ ul.new-tree {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqAmmend,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -578,7 +617,7 @@ ul.new-tree {
             }
           }
           .row-fluid {
-            background: $rqStarted;
+            background: $rqAmmend;
             border-bottom: 1px solid #f0f076;
             .tree-title-area {
               color: $darkText;
@@ -592,25 +631,17 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
-                }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
-                }
+                border-bottom: none;
               }
             }
           }
         }
       }
-      &.rq-updated-response {
+      &.rq-updated {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqUpdate,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -618,8 +649,8 @@ ul.new-tree {
             }
           }
           .row-fluid {
-            background: $rqStarted;
-            border-bottom: 1px solid #f0f076;
+            background: $rqUpdate;
+            border-bottom: 1px solid #86c5ef;
             .tree-title-area {
               color: $darkText;
             }
@@ -632,15 +663,7 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
-                }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
-                }
+                border-bottom: none;
               }
             }
           }
@@ -650,7 +673,7 @@ ul.new-tree {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqAccepted,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -672,15 +695,7 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
-                }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
-                }
+                border-bottom: none;
               }
             }
           }
@@ -690,7 +705,7 @@ ul.new-tree {
         .item-main {
           &:hover {
             .row-fluid {
-              background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
+              background:darken($rqWarning,10%) image-url("bgnds/hover.png") no-repeat 50% bottom;
               @include background-size(30px 6px);
               .row-fluid {
                 background-image: none;
@@ -712,15 +727,97 @@ ul.new-tree {
           li.tree-item {
             .item-main {
               .row-fluid {
-                background: #fafafa;
-                border-bottom: none !important;
-                .tree-title-area {
-                  color: $black;
+                border-bottom: none;
+              }
+            }
+          }
+        }
+      }
+    }
+    &.rq-colors-inner {
+      li.tree-item {
+        &.rq-assigned {
+          .item-main {
+            &:hover {
+              .row-fluid {
+                background:darken($rqAssigned,10%) image-url("bgnds/hover.png") no-repeat 50% bottom !important;
+                @include background-size(30px 6px !important);
+                .row-fluid {
+                  background-image: none;
                 }
-                &:hover {
-                  background:#e0f4ff image-url("bgnds/hover.png") no-repeat 50% bottom;
-                  @include background-size(30px 6px);
+              }
+            }
+            .row-fluid {
+              background: $rqAssigned !important;
+              border-bottom: 1px solid #f0f076 !important;
+              .tree-title-area {
+                color: $darkText;
+              }
+              .row-fluid {
+                border-bottom: none;
+              }
+            }
+          }
+        }
+        &.rq-submitted {
+          .item-main {
+            &:hover {
+              .row-fluid {
+                background:darken($rqSubmitted,10%) image-url("bgnds/hover.png") no-repeat 50% bottom !important;
+                @include background-size(30px 6px !important);
+                .row-fluid {
+                  background-image: none;
                 }
+              }
+            }
+            .row-fluid {
+              background: $rqSubmitted !important;
+              border-bottom: 1px solid #86c5ef !important;
+              .tree-title-area {
+                color: $darkText;
+              }
+              .row-fluid {
+                border-bottom: none;
+              }
+            }
+          }
+        }
+        &.rq-rejected {
+          .item-main {
+            &:hover {
+              .row-fluid {
+                background:darken($rqWarning,10%) image-url("bgnds/hover.png") no-repeat 50% bottom !important;
+                @include background-size(30px 6px !important);
+                .row-fluid {
+                  background-image: none;
+                }
+              }
+            }
+            .row-fluid {
+              background: $rqWarning !important;
+              border-bottom: 1px solid #f1977a !important;
+              .tree-title-area {
+                color: #c73535;
+              }
+            }
+          }
+        }
+        &.rq-accepted {
+          .item-main {
+            &:hover {
+              .row-fluid {
+                background:darken($rqAccepted,10%) image-url("bgnds/hover.png") no-repeat 50% bottom !important;
+                @include background-size(30px 6px !important);
+                .row-fluid {
+                  background-image: none;
+                }
+              }
+            }
+            .row-fluid {
+              background: $rqAccepted !important;
+              border-bottom: 1px solid #a8de84 !important;
+              .tree-title-area {
+                color: #3e7b39;
               }
             }
           }
@@ -758,7 +855,7 @@ ul.new-tree {
   .view-more-paging {
     line-height: 31px;
     min-height: 31px;
-    padding-left: 20px;
+    padding-right: 20px;
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
@@ -897,6 +994,9 @@ ul.new-tree {
 .show-description {
   position:relative;
   padding-top:16px;
+  &.bottom-space {
+    padding-bottom: 12px;
+  }
 }
 
 .tier-2-info {
@@ -1148,6 +1248,37 @@ ul.new-tree {
         &:hover {
           background:lighten(#ff9,5%);
           cursor:pointer;
+        }
+      }
+    }
+  }
+}
+
+.state-type {
+  display: inline-block;
+  .dropdown-menu {
+    left: -10px;
+    top: 26px;
+    z-index: 9999;
+    margin: 0;
+    padding: 0;
+    @include border-radius($default-border-radius);
+    min-width: 160px;
+    float: none;
+    background: $white;
+    border: 1px solid $gray;
+    li {
+      span {
+        display: block;
+        color: $darkText;
+        line-height: 30px;
+        padding: 0 8px;
+        i {
+          margin: 7px 6px 0 0;
+        }
+        &:hover {
+          cursor: pointer;
+          background: $lightGray;
         }
       }
     }

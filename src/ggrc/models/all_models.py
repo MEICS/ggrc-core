@@ -13,7 +13,6 @@ from .category import CategoryBase
 from .context import Context
 from .control import Control, ControlCategory, ControlAssertion
 from .control_control import ControlControl
-from .control_risk import ControlRisk
 from .control_section import ControlSection
 from .data_asset import DataAsset
 from .directive import Directive, Regulation, Policy, Contract, Standard
@@ -46,9 +45,6 @@ from .task import Task
 
 #TODO: This isn't currently used
 #from .relationship_type import RelationshipType
-from .risk import Risk
-from .risk_risky_attribute import RiskRiskyAttribute
-from .risky_attribute import RiskyAttribute
 from .section import Section
 from .section_objective import SectionObjective
 from .system import SystemOrProcess, System, Process
@@ -64,7 +60,6 @@ all_models = [
   Context,
   Control,
   ControlControl,
-  ControlRisk,
   ControlSection,
   DataAsset,
   Directive,
@@ -101,9 +96,6 @@ all_models = [
     DocumentationResponse,
     InterviewResponse,
     PopulationSampleResponse,
-  Risk,
-  RiskRiskyAttribute,
-  RiskyAttribute,
   Section,
   SectionObjective,
   SystemOrProcess,

@@ -851,6 +851,7 @@
             selected_object: null,
             selected_option_type: null,
             selected_option: null,
+            is_page_instance: false
           }, this.options));
         }
         return this.context;
@@ -1003,6 +1004,12 @@
     , ".option_column li.tree-item click": "on_select_option"
 
     , on_select_option: function(el) {
+        var instance = el.data('option')
+          , page_instance = GGRC.page_instance();
+        
+        //Check if selected item is page instance:
+        this.context.attr('is_page_instance', 
+          page_instance.type === instance.type && page_instance.id === instance.id);
         el.closest('.option_column').find('li.tree-item').removeClass('selected');
         el.addClass('selected');
         this.context.attr('selected_option', el.data('option'));
@@ -1015,12 +1022,17 @@
           , join_instance = this.create_join()
           ;
 
+        if(el.hasClass('disabled')){
+          return;
+        }
         if (!join_instance) {
           that.element.trigger("ajax:flash", {
             error: "Select an object to map" });
         } else {
           join_instance.save()
             .done(function() {
+              $(document.body).trigger('ajax:flash', 
+                  { success: that.context.selected_option.constructor.shortName + " mapped successfully."});
               $(that.element).modal_form('hide');
             })
             .fail(function(xhr) {

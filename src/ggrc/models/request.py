@@ -4,16 +4,16 @@
 # Maintained By: vraj@reciprocitylabs.com
 
 from ggrc import db
-from .mixins import deferred, Base, Described
+from sqlalchemy.ext.declarative import declared_attr
+from .mixins import deferred, Base, Described, Slugged
 
-class Request(Described, Base, db.Model):
+class Request(Slugged, Described, Base, db.Model):
   __tablename__ = 'requests'
 
   VALID_TYPES = (u'documentation', u'interview', u'population sample')
   VALID_STATES = (u'Draft', u'Requested', u'Responded', u'Amended Request',
     u'Updated Response', u'Accepted')
-  requestor_id = db.Column(db.Integer, db.ForeignKey('people.id'),
-    nullable=False)
+  requestor_id = db.Column(db.Integer, db.ForeignKey('people.id'))
   requestor = db.relationship('Person', foreign_keys=[requestor_id])
   assignee_id = db.Column(db.Integer, db.ForeignKey('people.id'),
     nullable=False)
@@ -26,14 +26,18 @@ class Request(Described, Base, db.Model):
   due_on = deferred(db.Column(db.Date, nullable=False), 'Request')
   audit_id = db.Column(db.Integer, db.ForeignKey('audits.id'), nullable=False)
   objective_id = db.Column(db.Integer, db.ForeignKey('objectives.id'),
-    nullable=False)
+    nullable=True)
   gdrive_upload_path = deferred(db.Column(db.String, nullable=True),
     'Request')
   test = deferred(db.Column(db.Text, nullable=True), 'Request')
   notes = deferred(db.Column(db.Text, nullable=True), 'Request')
-
   responses = db.relationship('Response', backref='request',
     cascade='all, delete-orphan')
+
+  # workaround for title being attached to slug
+  @declared_attr
+  def title(cls):
+    return deferred(db.Column(db.String, nullable=True), cls.__name__)
 
   _publish_attrs = [
     'assignee',

@@ -32,7 +32,8 @@ def view_link_filter(obj):
 @app.template_filter("display_class")
 def get_display_class_filter(obj):
   """Return the display class for an instance, model, or name.
-  Returns one of 'business', 'governance', 'risk', 'programs'.
+  Returns one of 'business', 'governance', 'risk', 'programs',
+  'objective', 'control', 'people'
   """
   from ggrc.models.mixins import Base
   from ggrc.models import get_model
@@ -45,16 +46,21 @@ def get_display_class_filter(obj):
     model = get_model(obj)
     obj = model._inflector.model_singular
 
-  if obj in ('Program'):
+  if obj in ('Program',):
     return 'program'
+  elif obj in ('Control',):
+    return 'controls'
+  elif obj in ('Objective',):
+    return 'objectives'
   elif obj in (
-      'Control', 'Directive', 'Contract', 'Policy', 'Regulation', 'Standard',
-      'Objective'):
+      'Directive', 'Contract', 'Policy', 'Regulation', 'Standard'):
     return 'governance'
   elif obj in (
-      'OrgGroup', 'Project', 'Facility', 'Product', 'DataAsset', 'Market',
+      'Project', 'Facility', 'Product', 'DataAsset', 'Market',
       'System', 'Process'):
     return 'business'
+  elif obj in ('OrgGroup', 'Person'):
+    return 'entities'
   elif obj in ('Risk', 'RiskyAttribute'):
     return 'risk'
   else:

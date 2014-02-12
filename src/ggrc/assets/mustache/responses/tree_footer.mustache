@@ -2,18 +2,12 @@
 {{#is_allowed 'create' model.shortName context=parent_instance.context.id}}
   <li class="tree-item tree-item-add tree-footer">
     <div class="row-fluid">
-      <div class="span12 section-expandable">
-        <a href="javascript://" class="section-add">
+      <div class="span12">
+        {{#using audit=parent_instance.audit}}
+        <a href="javascript://" class="section-create" data-toggle="modal-ajax-form" data-modal-reset="reset" data-modal-class="modal-wide" data-object-singular="{{parent_instance.response_model_class}}" data-object-plural="responses" data-object-params='{ "{{parent_instance.class.table_singular}}": {"id" : {{parent_instance.id}}, "type" : "{{parent_instance.class.model_singular}}" }, "context": { "id" : {{firstexist audit.context.id "null"}}, "href" : "{{audit.context.href}}", "type" : "{{audit.context.type}}" } }'>
           + PBC Response
         </a>
-        <span class="section-expander">
-          {{#using audit=parent_instance.audit}}
-          <a href="javascript://" class="section-create" data-toggle="modal-ajax-form" data-modal-reset="reset" data-modal-class="modal-wide" data-object-singular="{{parent_instance.response_model_class}}" data-object-plural="responses" data-object-params='{ "{{parent_instance.constructor.table_singular}}": {"id" : {{parent_instance.id}}, "type" : "{{parent_instance.constructor.model_singular}}" }, "context": { "id" : {{firstexist audit.context.id "null"}}, "href" : "{{audit.context.href}}", "type" : "{{audit.context.type}}" } }'>
-            <i class="grcicon-add-black"></i>
-            Create PBC Response
-          </a>
-          {{/using}}
-        </span>
+        {{/using}}
       </div>
     </div>
   </li>

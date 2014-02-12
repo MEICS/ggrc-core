@@ -371,6 +371,7 @@ $(function() {
             , allow_mapping: true
             , allow_creating: true
             , model: CMS.Models.Person
+            , mapping: "extended_related_people"
             }
         }
   };

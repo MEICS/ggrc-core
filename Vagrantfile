@@ -9,8 +9,12 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "ggrc"
 
-  # Fetched the box if it doesn't already exist.
+  # Fetch the box if it doesn't already exist.
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+
+  # If you are installing repeatedly, you can download the box from the above
+  # link and use this local `box_url` instead:
+  # config.vm.box_url = "precise64.box"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.

@@ -13,10 +13,15 @@
 -set objects_imported = converter.total_imported
 -set objects_created = converter.objects_created
 -set objects_updated = converter.objects_updated
+-set parent_meta_kind = converter.directive_kind()
 
 .results-table
   %h2
     Data to Import
+
+  %h3
+    {{parent_meta_kind}}:
+    %strong {{converter.import_slug}}
 
   .row-fluid
     #sampleData.span12

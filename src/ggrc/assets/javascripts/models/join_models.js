@@ -14,24 +14,25 @@ can.Model.Cacheable("can.Model.Join", {
   }
   , init : function() {
     this._super && this._super.apply(this, arguments);
-    //this.reinit();
-    if(this === can.Model.Join) {
-      this.bind("created.reinit destroyed.reinit", function(ev, instance) {
-        if (instance instanceof can.Model.Join) {
-          instance.reinit();
-        //can.proxy(this, "reinit"));
+    function reinit(ev, instance) {
+      if (instance instanceof can.Model.Join) {
+        instance.reinit();
+      //can.proxy(this, "reinit"));
 
-          can.each(instance.constructor.join_keys, function(cls, key) {
-            if (instance[key].reify && instance[key].reify().refresh)
-              instance[key].reify().refresh();
-            else {
-              var obj =
-                cls.findInCacheById(instance[key].id);
-              obj && obj.refresh();
-            }
-          });
-        }
-      });
+        can.each(instance.constructor.join_keys, function(cls, key) {
+          if (instance[key].reify && instance[key].reify().refresh)
+            instance[key].reify().refresh();
+          else {
+            var obj =
+              cls.findInCacheById(instance[key].id);
+            obj && obj.refresh();
+          }
+        });
+      }
+    }
+    if(this === can.Model.Join) {
+      this.bind("created", reinit);
+      this.bind("destroyed", reinit);
     }
   }
 }, {

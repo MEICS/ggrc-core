@@ -18,13 +18,13 @@ class Response(Noted, Described, Hyperlinked, WithContact, Slugged, db.Model):
       'polymorphic_on': 'response_type',
       }
 
-  VALID_STATES = (u'Assigned', u'Accepted', u'Completed')
+  VALID_STATES = (u'Assigned', u'Submitted', u'Accepted', u'Rejected')
   VALID_TYPES = (u'documentation', u'interview', u'population sample')
   request_id = deferred(
       db.Column(db.Integer, db.ForeignKey('requests.id'), nullable=False),
       'Response')
   response_type = db.Column(db.Enum(*VALID_TYPES), nullable=False)
-  status = deferred(db.Column(db.Enum(*VALID_STATES), nullable=False),
+  status = deferred(db.Column(db.String, nullable=False),
     'Response')
 
   _publish_attrs = [

@@ -7,6 +7,9 @@ import json
 from collections import namedtuple
 from flask import request, flash, session, url_for, redirect, g
 from flask.views import View
+from ggrc.extensions import get_extension_modules
+from urlparse import urlparse, urlunparse
+import urllib
 from ggrc.app import app
 from ggrc.rbac import permissions
 from ggrc.login import get_current_user
@@ -14,8 +17,7 @@ from ggrc.utils import as_json
 from ggrc.builder.json import publish
 from werkzeug.exceptions import Forbidden
 from . import filters
-from .common import BaseObjectView, RedirectedPolymorphView
-from .tooltip import TooltipView
+from .registry import object_view, tooltip_view
 from ggrc.models.task import Task, queued_task, create_task, make_task_response
 
 """ggrc.views
@@ -27,7 +29,12 @@ def get_permissions_json():
   return json.dumps(getattr(g, '_request_permissions', None))
 
 def get_config_json():
-  return json.dumps(app.config.public_config)
+  public_config = dict(app.config.public_config)
+  for extension_module in get_extension_modules():
+    if hasattr(extension_module, 'get_public_config'):
+      public_config.update(
+          extension_module.get_public_config(get_current_user()))
+  return json.dumps(public_config)
 
 def get_current_user_json():
   current_user = get_current_user()
@@ -150,7 +157,8 @@ def allowed_file(filename):
 ADMIN_KIND_TEMPLATES = {
   "processes": "Process_Import_Template.csv",
   "systems": "System_Import_Template.csv",
-  "admin": "People_Import_Template.csv",
+  "people": "People_Import_Template.csv",
+  "help": "Help_Import_Template.csv",
 }
 
 @app.route("/<admin_kind>/import_template", methods=['GET'])
@@ -209,20 +217,62 @@ def import_people_task(task):
           converter=converter, results=converter.objects, heading_map=converter.object_map)
     return render_template("directives/import_errors.haml",
           directive_id="People", exception_message=str(e))
+    
+@app.route("/tasks/import_help", methods=['POST'])
+@queued_task
+def import_help_task(task):
+  from ggrc.converters.common import ImportException
+  from ggrc.converters.help import HelpConverter
+  from ggrc.converters.import_helper import handle_csv_import
+  from ggrc.models import Help
+  import ggrc.views
+
+  csv_file = task.parameters.get("csv_file")
+  dry_run = task.parameters.get("dry_run")
+  try:
+    options = {}
+    options['dry_run'] = dry_run
+    converter = handle_csv_import(HelpConverter, csv_file.splitlines(True), **options)
+    if dry_run:
+      options['converter'] = converter
+      options['results'] = converter.objects
+      options['heading_map'] = converter.object_map
+      return render_template("help/import_result.haml", **options)
+    else:
+      count = len(converter.objects)
+      return import_redirect("/admin/help_redirect/{}".format(count))
+
+  except ImportException as e:
+    if e.show_preview:
+      converter = e.converter
+      return render_template("help/import_result.haml", exception_message=e,
+          converter=converter, results=converter.objects, heading_map=converter.object_map)
+    return render_template("directives/import_errors.haml",
+          directive_id="Help", exception_message=str(e))
+
+@app.route("/admin/help_redirect/<count>", methods=["GET"])
+def help_redirect(count):
+  flash(u'Successfully imported {} help page{}'.format(count, 's' if count > 1 else ''), 'notice')
+  return redirect("/admin")
 
 @app.route("/admin/people_redirect/<count>", methods=["GET"])
 def people_redirect(count):
-  flash(u'Successfully imported {} person{}'.format(count, 's' if count > 1 else ''), 'notice')
+  flash(u'Successfully imported {} {}'.format(count, 'people' if count > 1 else 'person'), 'notice')
   return redirect("/admin")
 
-@app.route("/admin/import_people", methods=['GET', 'POST'])
-def import_people():
+@app.route("/admin/import/<import_type>", methods=['GET', 'POST'])
+def import_people(import_type):
+  import_task = {
+    "people": import_people_task,
+    "help": import_help_task
+  }
 
   if not permissions.is_allowed_read("/admin", 1):
     raise Forbidden()
 
   if request.method != 'POST':
-    return render_template("people/import.haml", import_kind='People')
+    return render_template(import_type + "/import.haml",
+                           import_kind=import_type.capitalize())
 
   if 'cancel' in request.form:
     return import_redirect("/admin")
@@ -236,12 +286,12 @@ def import_people():
   else:
     file_msg = "Could not import: invalid csv file."
     return render_template("directives/import_errors.haml",
-        directive_id="People", exception_message=file_msg)
+        directive_id=import_type.capitalize(), exception_message=file_msg)
 
   parameters = {"dry_run": dry_run,
                 "csv_file": csv_file.read(),
                 "csv_filename": filename}
-  tq = create_task("import_people", import_people_task, parameters)
+  tq = create_task("import_"+import_type, import_task[import_type], parameters)
   return tq.make_response(import_dump({"id":tq.id, "status":tq.status}))
 
 @app.route("/standards/<directive_id>/import_controls", methods=['GET', 'POST'])
@@ -428,7 +478,7 @@ def import_requests(audit_id):
       if csv_file and allowed_file(csv_file.filename):
         filename = secure_filename(csv_file.filename)
         converter = handle_csv_import(RequestsConverter, csv_file,
-          program=program, audit=audit, dry_run=dry_run)
+          program_id=program.id, audit_id=audit.id, dry_run=dry_run)
 
         if dry_run:
           return render_template("programs/import_request_result.haml",
@@ -502,7 +552,7 @@ def import_sections(directive_id):
 
         if dry_run:
           return render_template("directives/import_sections_result.haml",
-              directive_id=int(directive_id), converter=converter,
+              directive_id=directive_id, converter=converter,
               results=converter.objects, heading_map=converter.object_map)
         else:
           count = len(converter.objects)
@@ -526,44 +576,62 @@ def import_sections(directive_id):
   return render_template(
       "directives/import.haml", directive_id=directive_id, import_kind=import_kind, return_to=return_to)
 
-@app.route("/systems/import", methods=['GET', 'POST'])
-def import_systems():
-  from werkzeug import secure_filename
+@app.route("/task/import_system", methods=["POST"])
+@app.route("/task/import_process", methods=["POST"])
+@queued_task
+def import_system_task(task):
   from ggrc.converters.common import ImportException
   from ggrc.converters.systems import SystemsConverter
   from ggrc.converters.import_helper import handle_csv_import
 
+  kind_lookup = {"systems": "System(s)", "processes": "Process(es)"}
+  csv_file = task.parameters.get("csv_file")
+  object_kind = task.parameters.get("object_kind")
+  dry_run = task.parameters.get("dry_run")
+  options = {"dry_run": dry_run}
+  if object_kind == "processes":
+    options["is_biz_process"] = '1'
+  try:
+    converter = handle_csv_import(SystemsConverter, csv_file.splitlines(True), **options)
+    if dry_run:
+      return render_template("systems/import_result.haml", converter=converter, results=converter.objects, heading_map=converter.object_map)
+    else:
+      count = len(converter.objects)
+      flash(u'Successfully imported {} {}'.format(count, kind_lookup[object_kind]), 'notice')
+      return import_redirect("/admin")
+
+  except ImportException as e:
+    if e.show_preview:
+      converter = e.converter
+      return render_template("systems/import_result.haml", exception_message=e, converter=converter, results=converter.objects, heading_map=converter.object_map)
+    return render_template("directives/import_errors.haml", exception_message=e)
+
+@app.route("/<object_kind>/import", methods=['GET', 'POST'])
+def import_systems_processes(object_kind):
   if not permissions.is_allowed_read("/admin", 1):
     raise Forbidden()
+  kind_lookup = {"systems": "Systems", "processes": "Processes"}
+  if object_kind in kind_lookup:
+    import_kind = kind_lookup[object_kind]
+  else:
+    return current_app.make_response((
+        "Invalid import type.", 404, []))
+  if request.method != 'POST':
+    return render_template("systems/import.haml", import_kind=import_kind)
 
-  if request.method == 'POST':
-    if 'cancel' in request.form:
-      return import_redirect('/admin')
-    dry_run = not ('confirm' in request.form)
-    csv_file = request.files['file']
-    try:
-      if csv_file and allowed_file(csv_file.filename):
-        filename = secure_filename(csv_file.filename)
-        converter = handle_csv_import(SystemsConverter, csv_file, dry_run=dry_run)
-        if dry_run:
-          return render_template("systems/import_result.haml",
-            converter=converter, results=converter.objects, heading_map=converter.object_map)
-        else:
-          count = len(converter.objects)
-          flash(u'Successfully imported {} system{}'.format(count, 's' if count > 1 else ''), 'notice')
-          return import_redirect("/admin")
-      else:
-        file_msg = "Could not import: invalid csv file."
-        return render_template("directives/import_errors.haml", exception_message=file_msg)
-
-    except ImportException as e:
-      if e.show_preview:
-        converter = e.converter
-        return render_template("systems/import_result.haml", exception_message=e,
-            converter=converter, results=converter.objects, heading_map=converter.object_map)
-      return render_template("directives/import_errors.haml", exception_message=e)
-
-  return render_template("systems/import.haml", import_kind='Systems')
+  if 'cancel' in request.form:
+    return import_redirect('/admin')
+  dry_run = not ('confirm' in request.form)
+  csv_file = request.files['file']
+  if csv_file and allowed_file(csv_file.filename):
+    from werkzeug import secure_filename
+    filename = secure_filename(csv_file.filename)
+  else:
+    file_msg = "Could not import: invalid csv file."
+    return render_template("directives/import_errors.haml", exception_message=file_msg)
+  parameters = {"dry_run": dry_run, "csv_file": csv_file.read(), "csv_filename": filename, "object_kind": object_kind}
+  tq = create_task("import_system", import_system_task, parameters)
+  return tq.make_response(import_dump({"id": tq.id, "status": tq.status}))
 
 @app.route("/programs/<program_id>/import_systems", methods=['GET', 'POST'])
 def import_systems_to_program(program_id):
@@ -633,52 +701,12 @@ def import_redirect(location):
     '<textarea data-type="application/json" response-code="200">{0}</textarea>'.format(
       json.dumps({ 'location': location })), 200, [('Content-Type', 'text/html')]))
 
-@app.route("/processes/import", methods=['GET', 'POST'])
-def import_processes():
-  from werkzeug import secure_filename
-  from ggrc.converters.common import ImportException
-  from ggrc.converters.systems import SystemsConverter
-  from ggrc.converters.import_helper import handle_csv_import
-
-  if not permissions.is_allowed_read("/admin", 1):
-    raise Forbidden()
-
-  if request.method == 'POST':
-    if 'cancel' in request.form:
-      return import_redirect('/admin')
-    dry_run = not ('confirm' in request.form)
-    csv_file = request.files['file']
-    try:
-      if csv_file and allowed_file(csv_file.filename):
-        filename = secure_filename(csv_file.filename)
-        converter = handle_csv_import(SystemsConverter, csv_file, dry_run=dry_run, is_biz_process='1')
-        if dry_run:
-          return render_template("systems/import_result.haml",
-            converter=converter, results=converter.objects, heading_map=converter.object_map)
-        else:
-          count = len(converter.objects)
-          flash(u'Successfully imported {} process{}'.format(count, 'es' if count > 1 else ''), 'notice')
-          return import_redirect("/admin")
-      else:
-        file_msg = "Could not import: invalid csv file."
-        return render_template("directives/import_errors.haml", exception_message=file_msg)
-    except ImportException as e:
-      if e.show_preview:
-        converter = e.converter
-        return render_template("systems/import_result.haml", exception_message=e,
-            converter=converter, results=converter.objects, heading_map=converter.object_map)
-      return render_template("directives/import_errors.haml", exception_message=e)
-
-  return render_template("systems/import.haml", import_kind='Processes')
-
-@app.route("/processes/export", methods=['GET'])
-def export_processes():
+@app.route("/tasks/export_process", methods=['POST'])
+@queued_task
+def export_process_task(task):
   from ggrc.converters.systems import SystemsConverter
   from ggrc.converters.import_helper import handle_converter_csv_export
   from ggrc.models.all_models import Process
-
-  if not permissions.is_allowed_read("/admin", 1):
-    raise Forbidden()
 
   options = {}
   options['export'] = True
@@ -686,6 +714,19 @@ def export_processes():
   procs = Process.query.all()
   filename = "PROCESSES.csv"
   return handle_converter_csv_export(filename, procs, SystemsConverter, **options)
+
+@app.route("/tasks/export_system", methods=['POST'])
+@queued_task
+def export_system_task(task):
+  from ggrc.converters.systems import SystemsConverter
+  from ggrc.converters.import_helper import handle_converter_csv_export
+  from ggrc.models.all_models import System
+
+  options = {}
+  options['export'] = True
+  systems = System.query.filter_by(is_biz_process=False).all()
+  filename = "SYSTEMS.csv"
+  return handle_converter_csv_export(filename, systems, SystemsConverter, **options)
 
 @app.route("/tasks/export_people", methods=['POST'])
 @queued_task
@@ -699,32 +740,36 @@ def export_people_task(task):
   filename = "PEOPLE.csv"
   return handle_converter_csv_export(filename, people, PeopleConverter, **options)
 
-@app.route("/admin/export_people", methods=['GET'])
-def export_people():
+@app.route("/tasks/export_help", methods=['POST'])
+@queued_task
+def export_help_task(task):
+  from ggrc.converters.help import HelpConverter
+  from ggrc.converters.import_helper import handle_converter_csv_export
+  from ggrc.models.all_models import Help
+  options = {}
+  options['export'] = True
+  people = Help.query.all()
+  filename = "HELP.csv"
+  return handle_converter_csv_export(filename, people, HelpConverter, **options)
+
+@app.route("/admin/export/<export_type>", methods=['GET'])
+def export(export_type):
   if not permissions.is_allowed_read("/admin", 1):
     raise Forbidden()
+  
+  export_task = {
+    "people": export_people_task,
+    "help": export_help_task,
+    "process": export_process_task,
+    "system": export_system_task,
+  }
 
-  tq = create_task("export_people", export_people_task)
+  tq = create_task("export_" + export_type, export_task[export_type])
   return import_dump({"id":tq.id, "status":tq.status})
 
 @app.route("/task/<id_task>", methods=['GET'])
 def get_task_response(id_task):
   return make_task_response(id_task)
-
-@app.route("/systems/export", methods=['GET'])
-def export_systems():
-  from ggrc.converters.systems import SystemsConverter
-  from ggrc.converters.import_helper import handle_converter_csv_export
-  from ggrc.models.all_models import System
-
-  if not permissions.is_allowed_read("/admin", 1):
-    raise Forbidden()
-
-  options = {}
-  options['export'] = True
-  systems = System.query.filter_by(is_biz_process=False).all()
-  filename = "SYSTEMS.csv"
-  return handle_converter_csv_export(filename, systems, SystemsConverter, **options)
 
 @app.route("/standards/<directive_id>/export_sections", methods=['GET'])
 @app.route("/regulations/<directive_id>/export_sections", methods=['GET'])
@@ -826,7 +871,7 @@ def export_requests(audit_id):
   options = {}
   audit = Audit.query.get(audit_id)
   program = audit.program
-  options['program'] = program
+  options['program_id'] = program.id
   filename = "{}-requests.csv".format(program.slug)
   if 'ids' in request.args:
     ids = request.args['ids'].split(",")
@@ -936,19 +981,10 @@ def import_controls_template(object_type, object_id):
   body = render_template("csv_files/" + template_name, **options)
   return current_app.make_response((body, 200, headers))
 
-ViewEntry = namedtuple('ViewEntry', 'url model_class service_class')
-
-def object_view(model_class, base_service_class=BaseObjectView):
-  return ViewEntry(
-      model_class._inflector.table_plural,
-      model_class,
-      base_service_class)
-
-def tooltip_view(model_class, base_service_class=TooltipView):
-  return object_view(model_class, base_service_class=base_service_class)
-
-def all_object_views():
+def contributed_object_views():
   from ggrc import models
+  from .common import RedirectedPolymorphView
+
   return [
       object_view(models.Task),
       object_view(models.Program),
@@ -968,12 +1004,24 @@ def all_object_views():
       object_view(models.Market),
       object_view(models.Project),
       object_view(models.DataAsset),
-      object_view(models.RiskyAttribute),
-      object_view(models.Risk),
       object_view(models.Person),
       ]
 
-def all_tooltip_views():
+
+def all_object_views():
+  views = contributed_object_views()
+
+  for extension_module in get_extension_modules():
+    contributions = getattr(extension_module, "contributed_object_views", None)
+    if contributions:
+      if callable(contributions):
+        contributions = contributions()
+      views.extend(contributions)
+
+  return views
+
+
+def contributed_tooltip_views():
   from ggrc import models
   return [
       tooltip_view(models.Audit),
@@ -993,13 +1041,29 @@ def all_tooltip_views():
       tooltip_view(models.Market),
       tooltip_view(models.Project),
       tooltip_view(models.DataAsset),
-      tooltip_view(models.RiskyAttribute),
-      tooltip_view(models.Risk),
       tooltip_view(models.Person),
       tooltip_view(models.Event),
       ]
 
-def init_all_object_views(app):
+
+def all_tooltip_views():
+  views = contributed_tooltip_views()
+
+  for extension_module in get_extension_modules():
+    contributions = getattr(extension_module, "contributed_tooltip_views", None)
+    if contributions:
+      if callable(contributions):
+        contributions = contributions()
+      views.extend(contributions)
+
+  return views
+
+
+def init_extra_views(app):
+  pass
+
+
+def init_all_views(app):
   import sys
   from ggrc import settings
 
@@ -1019,12 +1083,12 @@ def init_all_object_views(app):
       decorators=(login_required,)
       )
 
-  if hasattr(settings, 'EXTENSIONS'):
-    for extension in settings.EXTENSIONS:
-      __import__(extension)
-      extension_module = sys.modules[extension]
-      if hasattr(extension_module, 'initialize_all_object_views'):
-        extension_module.initialize_all_object_views(app)
+  init_extra_views(app)
+  for extension_module in get_extension_modules():
+    ext_extra_views = getattr(extension_module, "init_extra_views", None)
+    if ext_extra_views:
+      ext_extra_views(app)
+
 
 # Mockups HTML pages are listed here
 @app.route("/mockups")
@@ -1040,3 +1104,18 @@ def assessments():
   """The assessments guide page
   """
   return render_template("mockups/assessments.html")
+  
+@app.route("/mockups/assessments_grid")
+@login_required
+def assessments_grid():
+  """The assessments grid guide page
+  """
+  return render_template("mockups/assessments-grid.html")
+
+@app.route("/permissions")
+@login_required
+def user_permissions():
+  '''Permissions object for the currently
+     logged in user
+  '''
+  return get_permissions_json()

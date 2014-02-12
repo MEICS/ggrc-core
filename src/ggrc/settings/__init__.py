@@ -49,11 +49,16 @@ for module_name in settings_modules.split(" "):
 
   try:
     _EXT = EXTENSIONS if "EXTENSIONS" in vars() else []
+    _exports = exports if "exports" in vars() else []
     execfile(fullpath)
     if "EXTENSIONS" in vars() and _EXT != EXTENSIONS:
       _EXT += EXTENSIONS
     EXTENSIONS = _EXT
     del _EXT
+    if "exports" in vars() and _exports != exports:
+      _exports += exports
+    exports = _exports
+    del _exports
   except Exception, e:
     raise
 

@@ -7,7 +7,6 @@
 {{!div class="modal-body"}}
 {{#instance}}
 <form action="javascript://">
-  {{{ handle_context }}}
   <div class="row-fluid">
     <div class="span6">
       <label>
@@ -56,14 +55,17 @@
   <div class="row-fluid">
     {{#using objective=instance.objective}}
     <div class="span6">
+    {{#is_allowed 'update' 'Objective' context=null}}
       <label>
         Objective
-        <span class="required">*</span>
       </label>
       <i class="grcicon-objective-color pull-left icon-field"></i>
       <div class="objective-selector">
         <input tabindex="6" type="text" name="objective.title" data-lookup="Objective" class="span10" value="{{firstnonempty objective.title ''}}">
       </div>
+    {{else}}
+      &nbsp;
+    {{/is_allowed}}
     </div>
     {{/using}}
     {{#using assignee=instance.assignee}}
@@ -84,16 +86,16 @@
       <div class="expand-link">
         <a class="show-hidden-fields" href="javascript://">
           <span class="out">
-            <i class="grcicon-show"></i>
+            <i class="grcicon-show-arrow"></i>
             Show 
           </span>
           <span class="in">
-            <i class="grcicon-hide"></i>
+            <i class="grcicon-hide-arrow"></i>
             Hide
           </span>
           Advanced
           <span class="hidden-fields out">
-            Test, Notes
+            Test, Notes, Code
           </span>
         </a>
       </div>
@@ -118,6 +120,16 @@
         </div>
       </div>
     </div>
+    <div class="row-fluid">
+      <div class="span6">
+        <label>
+          Code
+          <i class="grcicon-help-black" rel="tooltip" title="The gGRC application will automatically provide codes for new objects.  If you would like to override this feature you may manually enter a code of your choosing.  You should have a specific reason for doing this."></i>
+        </label>
+        <input tabindex="8" class="input-block-level" name="slug" placeholder="REQUEST-XXX" type="text" value="{{slug}}">
+      </div>
+    </div>
+
   </div>
   {{#using audit=instance.audit}}
   <input type="hidden" name="audit.id" value="{{audit.id}}">

@@ -194,7 +194,7 @@ can.Control("StickyHeader", {
   , clone : function(el) {
     // Compute heights of above items
     var data = el.data('sticky');
-    !data.clone && (data.clone = el.clone(true).addClass("sticky-clone"));
+    !data.clone && (data.clone = $("<" + el[0].tagName + ">").addClass("sticky-clone").width(el.width()).height(el.height()).html("&nbsp;"));
     this.position_element(el);
     el.addClass("sticky sticky-" + data.type);
     return data.clone;
@@ -269,5 +269,4 @@ can.Control("StickyHeader", {
     delete this._footer;
   }
 });
-
 })(this.can, this.can.$);

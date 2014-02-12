@@ -4,16 +4,35 @@
     Created By: brad@reciprocitylabs.com
     Maintained By: brad@reciprocitylabs.com
 }}
-<li class="tree-item programs request-list rq-{{to_class instance.status}} {{^instance.assignee}}rq-warning{{/instance.assignee}}" data-object-id="{{instance.id}}" data-object-type="{{instance.constructor.table_singular}}">
+<li class="tree-item programs request-list rq-{{to_class instance.status}} {{#if_helpers '\
+      #if_null' instance.assignee '\
+      or #if_null' instance.objective '\
+         and #is_allowed' 'update' 'Objective' context=null}}rq-warning{{/if_helpers}}" data-object-id="{{instance.id}}" data-object-type="{{instance.class.table_singular}}">
   <div class="item-main" {{#instance}}{{data 'model'}}{{/instance}} data-model="true">
     <a href="javascript://" class="openclose">
       <div class="row-fluid">
-        <div class="span3">
+        <div class="span2">
           <div class="item-data">
             <div class="tree-title-area">
               <i class="grcicon-request-color"></i>
+              {{instance.description}}
+            </div>
+          </div>
+        </div>
+        <div class="span2">
+          <div class="item-data">
+            <div class="tree-title-area">
+              <i class="grcicon-objective-color"></i>
               {{#using objective=instance.objective}}
-                {{objective.title}}
+                {{#if objective}}
+                  {{objective.title}}
+                {{else}}
+                  {{#is_allowed "update" "Objective" context=null}}
+                    Missing Objective
+                  {{else}}
+                    NEW
+                  {{/is_allowed}}
+                {{/if}}
               {{/using}}
             </div>
           </div>
@@ -26,15 +45,15 @@
                 ^if' allow_mapping_or_creating '\
                 or ^is_allowed' 'update' instance '\
               ' _1_context=instance.context.id}}
-                {{{render '/static/mustache/people/popover.mustache' person=assignee}}}
+                {{{renderLive '/static/mustache/people/popover.mustache' person=assignee}}}
               {{else}}
                 <input type="text" name="assignee.name" data-lookup="Person" class="span8 short-field" value="{{firstnonempty assignee.name assignee.email ''}}">
               {{/if_helpers}}
           </div>
         {{/using}}
         </div>
-        <div class="span3" {{ (el) -> el.ggrc_controllers_quick_form({ instance : el.closest('[data-model]').data('model')}); }}>
-          <span class="pull-left request-type black-font">type:</span>
+        <div class="span2" {{ (el) -> el.ggrc_controllers_quick_form({ instance : el.closest('[data-model]').data('model')}); }}>
+          <span class="pull-left request-type black-font"></span>
           {{#with_mapping 'responses' instance}}
             {{#if_helpers '\
               ^if' allow_mapping_or_creating '\
@@ -76,9 +95,7 @@
               <div class="black-font">
                 &nbsp;&nbsp;
                 {{#if instance.due_on}}
-                  {{#using due_on=instance.due_on}}
-                  <strong>due on: </strong>{{localize_date due_on}}
-                  {{/using}}
+                  <strong>due on: </strong>{{localize_date instance.due_on}}
                 {{/if}}
               </div>
             </div>
@@ -123,15 +140,13 @@
     </div>
 
     {{#if draw_children}}
-      {{^if_null 'z'}} {{! this line is just chopping the context stack down to one element}}
-        {{#child_options}}
+      {{#each child_options}}
           <div class="inner-tree">
-            <h6>PBC {{firstnonempty title_plural model.title_plural}} ({{child_count}})</h6>
+            <h6>PBC {{#prune_context}}{{firstnonempty title_plural model.title_plural}}{{/prune_context}} ({{child_count}})</h6>
             <ul class="tree-structure new-tree" {{data 'options'}} {{ (el) -> el.cms_controllers_tree_view(el.data("options")) }}>
             </ul>
           </div>
-        {{/child_options}}
-      {{/if_null}}
+      {{/each}}
     {{/if}}
     
   </div>

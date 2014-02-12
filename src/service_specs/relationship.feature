@@ -30,7 +30,7 @@ Feature: A Relationship models a relation between two resources. Relationships
   Examples:
       | type_a            | type_b           |
       | Control           | System           |
-      | DataAsset         | Risk             |
+      | DataAsset         | Process          |
       #| Document          | Request          |
       | Facility          | Project          |
       | Market            | Program          |
@@ -54,7 +54,7 @@ Feature: A Relationship models a relation between two resources. Relationships
   Examples:
       | type_a            | type_b           |
       | Control           | System           |
-      | DataAsset         | Risk             |
+      | DataAsset         | Process          |
       #| Document          | Request          |
       | Facility          | Project          |
       | Market            | Program          |

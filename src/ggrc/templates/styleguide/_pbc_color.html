@@ -9,42 +9,42 @@
         PBC Requests (7)
         <a href="#" class="advanced-filter-trigger"><i class="grcicon-search"></i> Show Filters</a>
       </h6>
-      <div class="advanced-filters pbc-filters">
-        <div class="row-fluid">
-          <div class="span4">
-            <ul class="filter-date-range">
-              <li>FILTERS:</li>
-              <li class="pull-right">
-                <span>requested on or after:</span>
-                <input class="input-mini date" name="filter_end_date" data-toggle="datepicker" data-after="filter_start_date" placeholder="/ /" type="text" value="">
-              </li>
-            </ul>
-          </div>
-          <div class="span3">
-            <i class="grcicon-person-green pull-left"></i>
-            <input type="text" name="assignee.name" data-lookup="Person" class="span10 short-field" value="Vladan Mitevski">
-          </div>
-          <div class="span3">
-            <span class="pull-left request-type">type:</span>
-            <select name="request_type" class="span9 short-field">
-              <option selected="true">Documentation</option>
-              <option>Interview</option>
-              <option>Population Sample</option>
-            </select>
-          </div>
-          <div class="span2">
-            <select name="status" class="span9 short-field">
-              <option selected="true">Draft</option>
-              <option>Requested</option>
-              <option>Responded</option>
-              <option>Amended Request</option>
-              <option>Updated Response</option>
-              <option>Accepted</option>
-            </select>
-          </div>
-        </div>
-      </div>
       <ul class="tree-structure new-tree rq-colors cms_controllers_tree_view">
+        <li class="advanced-filters pbc-filters">
+          <div class="row-fluid">
+            <div class="span4">
+              <ul class="filter-date-range">
+                <li>FILTERS:</li>
+                <li class="pull-right">
+                  <span>requested on or after:</span>
+                  <input class="input-mini date" name="filter_end_date" data-toggle="datepicker" data-after="filter_start_date" placeholder="/ /" type="text" value="">
+                </li>
+              </ul>
+            </div>
+            <div class="span3">
+              <i class="grcicon-person-green pull-left"></i>
+              <input type="text" name="assignee.name" data-lookup="Person" class="span10 short-field" value="Vladan Mitevski">
+            </div>
+            <div class="span3">
+              <span class="pull-left request-type">type:</span>
+              <select name="request_type" class="span9 short-field">
+                <option selected="true">Documentation</option>
+                <option>Interview</option>
+                <option>Population Sample</option>
+              </select>
+            </div>
+            <div class="span2">
+              <select name="status" class="span9 short-field">
+                <option selected="true">Draft</option>
+                <option>Requested</option>
+                <option>Responded</option>
+                <option>Amended Request</option>
+                <option>Updated Response</option>
+                <option>Accepted</option>
+              </select>
+            </div>
+          </div>
+        </li>
         <li class="tree-item programs request-list cms_controllers_tree_view_node rq-draft">
           <div class="item-main">
             <a href="javascript://" class="openclose">

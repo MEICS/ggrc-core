@@ -6,6 +6,11 @@
  */
 
 .modal {
+  select.inline-select {
+    width:auto;
+    font-size:16px;
+    margin-bottom:0;
+  }
   width:700px;
   margin-left: -350px;
   height: auto !important;
@@ -141,6 +146,16 @@
             background: #ffffb3;
           }
         }
+        &.people-selector {
+          .selected {
+            .row-fluid {
+              &:hover {
+                background:#eee image-url("bgnds/hover.png") no-repeat 50% bottom;
+                @include background-size(30px 6px);
+              }
+            }
+          }
+        }
       }
       .selector-info {
         h4.simple-url {
@@ -164,6 +179,7 @@
           overflow:auto;
           max-height:240px;
           font-size:12px;
+          word-break: break-word;
           p {
             line-height:16px;
           }
@@ -502,6 +518,12 @@
       font-size:$f-small;
       display: inline-block;
       margin-left: 6px;
+      &.autogenerate-result {
+        display: none;
+        &.active {
+          display: inline-block;
+        }
+      }
     }
     .large {
       font-size: 16px;

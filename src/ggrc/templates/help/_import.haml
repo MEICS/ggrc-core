@@ -1,0 +1,40 @@
+-# Copyright (C) 2014 Google Inc., authors, and contributors <see AUTHORS file>
+-# Licensed under http://www.apache.org/licenses/LICENSE-2.0 <see LICENSE file>
+-# Created By: anze@reciprocitylabs.com
+-# Maintained By: anze@reciprocitylabs.com
+
+-extends "layouts/_widget_box.haml"
+
+-block widget_help
+  import
+
+-block widget_id
+  import_people_widget
+
+-block widget_buttons
+
+-block widget_title
+  Import from file
+
+-block main
+  %form{"class":'import', "enctype":'multipart/form-data', "method":'post', "multipart":True, "data-remote":True,'data-type':'html','data-update-target':'#results-container'}
+    .import-interface
+      .row-fluid
+        .span8
+          %h3
+            Choose CSV file to upload
+        .span4
+          .download-template
+            %a.section-import{"href": '/help/import_template'}
+              %i.grcicon-imp-exp
+              Download Import {{import_kind}} template
+      .row-fluid
+        .span12
+          %input{ 'name': 'file', 'value': 'choose file' , 'type': 'file' }
+          .import-buttons
+            %input{ 'value': 'Upload and Review', 'class': 'btn btn-primary', 'type': 'submit' }
+            -#%a{ 'href': 'javascript://', 'class': 'import-help', 'data-toggle': 'modal-ajax', 'data-original-title': 'help', 'data-modal-type': 'help-form' }
+              -#View Help
+    -if exception_message is defined and not exception_message.show_preview
+      -include 'directives/import_errors.haml'
+    #results-container

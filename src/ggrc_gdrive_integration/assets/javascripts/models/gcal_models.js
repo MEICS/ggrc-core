@@ -52,7 +52,7 @@
     }
     , refresh : function(params) {
       return this.constructor.findOne({ id : this.id })
-      .then(can.proxy(this.constructor, "model"))
+      .then($.proxy(this.constructor, "model"))
       .done(function(d) {
         d.updated();
         //  Trigger complete refresh of object -- slow, but fixes live-binding
@@ -63,11 +63,27 @@
 
   });
 
-
+  function check_path(obj, params) {
+    if(!obj.getPath(params)) {
+      GGRC.config = GGRC.config || {};
+      return CMS.Models.GCal.getPrimary().then(function(d) {
+        GGRC.config.USER_PRIMARY_CALENDAR = d;
+        if(!GGRC.config.DEFAULT_CALENDAR) {
+          GGRC.config.DEFAULT_CALENDAR = d;
+        }
+      });
+    } else {
+      return $.when();
+    }
+  }
 
   can.Model.Cacheable("CMS.Models.GCalEvent", {
 
     getPath : function(params) {
+      if(!params.calendar && !GGRC.config.DEFAULT_CALENDAR) {
+        return null;
+      }
+
       return ["/calendar/v3/calendars/"
       , (params && params.calendar ? params.calendar.id : GGRC.config.DEFAULT_CALENDAR.id)
       , "/events"
@@ -76,46 +92,62 @@
     }
 
     , findAll : (gcalevent_findAll = function(params) {
+      var dfd = check_path(this, params)
+      , that = this;
+
       if(params && params.response) {
         params.q = "PBC Response #" + params.response.id;
       }
-      return GGRC.gapi_request_with_auth({
-        path : this.proxy("getPath", params)
-        , method : "get"
-        , callback : function(dfd, result) {
-          if(result.error) {
-            dfd.reject(result.error);
-          } else if(result.items) {
-            var objs = result.items;
-            can.each(objs, function(obj) {
-              obj.selfLink = obj.selfLink || "#";
-            });
-            dfd.resolve(objs);
-          } else {
-            result.selfLink = "#";
-            dfd.resolve(result);
+      return dfd.then(function() {
+        return GGRC.gapi_request_with_auth({
+          path : that.proxy("getPath", params)
+          , method : "get"
+          , callback : function(dfd, result) {
+            if(result.error) {
+              dfd.reject(result.error);
+            } else if(result.items) {
+              var objs = result.items;
+              can.each(objs, function(obj) {
+                obj.selfLink = obj.selfLink || "#";
+              });
+              dfd.resolve(objs);
+            } else {
+              result.selfLink = "#";
+              dfd.resolve(result);
+            }
           }
-        }
+          , scopes : scopes
+        });
       });
     })
     , findOne : gcalevent_findAll
     , create : function(params) {
-      return GGRC.gapi_request_with_auth({
-        path : this.getPath(params)
-        , body : params
-        , method : "post"
-        , callback : function(dfd, d) {
-          dfd.resolve(d);
-        }
+      var dfd = check_path(this, params)
+      , that = this;
+      return dfd.then(function() {
+        return GGRC.gapi_request_with_auth({
+          path : that.getPath(params)
+          , body : params
+          , method : "post"
+          , callback : function(dfd, d) {
+            dfd.resolve(d);
+          }
+          , scopes : scopes
+        });
       });
     }
     , destroy : function(id) {
-      return GGRC.gapi_request_with_auth({
-        path : this.getPath() + "/" + id
-        , method : "delete"
-        , callback : function(dfd, d) {
-          dfd.resolve(d);
-        }
+      var dfd = check_path(this, params)
+      , that = this;
+      return dfd.then(function() {
+        return GGRC.gapi_request_with_auth({
+          path : that.getPath() + "/" + id
+          , method : "delete"
+          , callback : function(dfd, d) {
+            dfd.resolve(d);
+          }
+          , scopes : scopes
+        });
       });
     }
     , attributes : {
@@ -154,7 +186,7 @@
 
     refresh : function(params) {
       return this.constructor.findOne({ calendar : this.calendar, id : this.id })
-      .then(can.proxy(this.constructor, "model"))
+      .then($.proxy(this.constructor, "model"))
       .done(function(d) {
         d.updated();
         //  Trigger complete refresh of object -- slow, but fixes live-binding

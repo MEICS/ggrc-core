@@ -1,0 +1,438 @@
+.grid-wrap {
+  position: relative;
+  margin-bottom: 20px;
+  .grid-header {
+    width: 100%;
+    h6 {
+      @include border-radius(4px 4px 0 0);
+      border:1px solid #ccc;
+      border-bottom:none;
+      background:#ddd;
+      color:#666;
+      padding-left:20px;
+      margin-top:20px;
+      line-height:24px;
+    }
+    .advanced-filter-trigger {
+      margin-right: 20px;
+      float: right;
+      color: $gray;
+      line-height: 24px;
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 11px;
+      @include transition(color 0.2s ease-in-out);
+      i {
+        @include opacity(0.3);
+        @include transition(opacity 0.2s ease-in-out);
+        margin-top: 4px;
+      }
+      &:hover {
+        color: $black;
+        text-decoration: none;
+        i {
+          @include opacity(1);
+        }
+      }
+      &.active {
+        color: $black;
+        i {
+          @include opacity(1);
+        }
+      }
+    }
+  }
+  .grid-holder {
+    width: 100%;
+    height: 300px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+  }
+  .grid-pagination {
+    width: 100%;
+    height: 20px;
+  }
+}
+
+.slick-top-panel-scroller {
+  &.ui-state-default {
+    border-left: none;
+    border-right: none;
+  }
+  &.advanced-filters {
+    &.pbc-filters {
+      margin: 0;
+    }
+  }
+}
+
+.slick-header {
+  &.ui-state-default {
+    width: 100%;
+    overflow: hidden;
+    border: none;
+  }
+}
+
+.slick-headerrow {
+  &.ui-state-default {
+    width: 100%;
+    overflow: hidden;
+    border-left: 0px;
+  }
+}
+
+.slick-header-columns,
+.slick-headerrow-columns {
+  position: relative;
+  white-space: nowrap;
+  cursor: default;
+  overflow: hidden;
+}
+
+.slick-header-column {
+  &.ui-state-default {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    height: 16px;
+    line-height: 16px;
+    margin: 0;
+    padding: 4px 12px;
+    border-right: 1px solid #ccc;
+    border-left: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+    float: left;
+    background: #eee !important;
+    color: $text;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  &:hover {
+    .drag {
+      position: absolute;
+      left: 3px;
+      top: -3px;
+      width: 6px;
+      height: 30px;
+      cursor: move;
+      background-image: image-url("grcicons/icons.png");
+      background-repeat: no-repeat;
+      @include background-size(368px 416px);
+      background-position: -275px -169px;
+    }
+  }
+}
+
+.slick-headerrow-column {
+  .ui-state-default {
+    padding: 4px;
+  }
+}
+
+.slick-header-column-sorted {
+  font-style: italic;
+}
+
+.slick-sort-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 5px;
+  margin-top: 6px;
+  float: left;
+}
+
+.slick-sort-indicator-desc {
+  background: image-url('bgnds/grid/sort-desc.png') no-repeat 0 0 !important;
+}
+
+.slick-sort-indicator-asc {
+  background: image-url('bgnds/grid/sort-asc.png') no-repeat 0 0 !important;
+}
+
+.slick-resizable-handle {
+  position: absolute;
+  font-size: 0.1px;
+  display: block;
+  cursor: ew-resize;
+  width: 4px;
+  right: 0px;
+  top: 0;
+  height: 100%;
+}
+
+.slick-sortable-placeholder {
+  background: silver;
+}
+
+.grid-canvas {
+  position: relative;
+  outline: 0;
+}
+
+.slick-row {
+  line-height: 23px;
+  height: 23px;
+  &.ui-widget-content {
+    position: absolute;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+  }
+  &.odd {
+    background: #f7f7f7;
+  }
+}
+
+.slick-row {
+  &.ui-state-active {
+    position: absolute;
+    border: 0px;
+    width: 100%;
+  }
+}
+
+.slick-cell,
+.slick-headerrow-column {
+  position: absolute;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  z-index: 1;
+  padding: 4px 20px;
+  margin: 0;
+  white-space: nowrap;
+  cursor: default;
+  font-size: 12px;
+}
+
+.slick-group-toggle {
+  display: inline-block;
+}
+
+.slick-cell {
+  border-bottom: 1px solid #d8d8d8;
+  &.highlighted {
+    background: #e0f4ff;
+    border: 1px solid #ddd;
+  }
+  &.flashing {
+    border: 1px solid red !important;
+  }
+  &.editable {
+    z-index: 11;
+    overflow: visible;
+    background: none;
+    border: 1px solid #000;
+    .editor-text {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      border: 0;
+      margin: 0;
+      background: transparent;
+      outline: 0;
+      padding: 0;
+      @include border-radius(0);
+      &:focus {
+        @include box-shadow(none);
+      }
+    }
+    .editor-select {
+      width: 100%;
+      height: 100%;
+      min-height: 100%;
+      border: 0;
+      margin: 0;
+      background: transparent;
+      outline: 0;
+      padding: 0;
+      @include border-radius(0);
+    }
+  }
+  &:focus {
+    outline: none;
+  }
+  .ui-datepicker-trigger {
+    position: absolute;
+    right: 14px;
+    top: 7px;
+  }
+}
+
+.slick-reorder-proxy {
+  display: inline-block;
+  background: blue;
+  opacity: 0.15;
+  filter: alpha(opacity = 15);
+  cursor: move;
+}
+
+.slick-reorder-guide {
+  display: inline-block;
+  height: 2px;
+  background: blue;
+  opacity: 0.7;
+  filter: alpha(opacity = 70);
+}
+
+.slick-selection {
+  z-index: 10;
+  position: absolute;
+  border: 2px dashed black;
+}
+
+
+// Slick Pager
+.slick-pager {
+  width: 100%;
+  height: 32px;
+  line-height: 32px;
+  border: 1px solid #ccc;
+  border-top: 0;
+  vertical-align: middle;
+  box-sizing: border-box;
+  .slick-pager-status {    
+    font-size: 75%;
+    display: inline-block;
+    color: $gray;
+  }
+  .ui-icon-container {
+    display: inline-block;
+    margin: 2px;
+    border-color: gray;
+  }
+  .slick-pager-nav {
+    display: inline-block;
+    float: left;
+    padding-left: 16px;
+    padding-top: 5px;
+    padding-right: 10px;
+    padding-bottom: 0;
+    line-height: 26px;
+    .ui-icon-container {
+      border-color: none;
+    }
+    .ui-corner-all {
+      @include border-radius(0);
+    }
+    .ui-state-default {
+      border: none;
+      background: none;
+      margin: 0;
+      .ui-icon {
+        margin-top: 3px;
+        background-image: image-url('grcicons/icons.png');
+        display: inline-block;
+        width: 20px;
+        height: 16px;
+        line-height: 16px;
+        vertical-align: top; //necessary or button with icon embedded will sometimes be to tall.
+        background-image: image-url("grcicons/icons.png");
+        background-position: -2000px -2000px; // blank default state 
+        background-repeat: no-repeat;
+        @include background-size(368px 416px);
+        cursor: pointer;
+        &.ui-icon-seek-first { background-position:-222px -200px; }
+        &.ui-icon-seek-end { background-position:-198px -200px; }
+        &.ui-icon-seek-prev { background-position:-294px -248px; }
+        &.ui-icon-seek-next { background-position:-294px -224px; }
+        background-position:-222px -8px;
+      }
+    }
+  }
+  .slick-pager-settings {
+    display: block;
+    float: right;
+    padding-right: 18px;
+    padding-top: 3px;
+    padding-left: 0;
+    padding-bottom: 0;
+    line-height: 29px;
+    .ui-icon-container {
+      border-color: none;
+    }
+    .ui-corner-all {
+      @include border-radius(0);
+    }
+    .ui-state-default {
+      border: none;
+      background: none;
+      margin: 0;
+      .ui-icon {
+        margin-top: 3px;
+        background-image: image-url('grcicons/icons.png');
+        display: inline-block;
+        width: 20px;
+        height: 16px;
+        line-height: 16px;
+        vertical-align: top; //necessary or button with icon embedded will sometimes be to tall.
+        background-image: image-url("grcicons/icons.png");
+        background-position: -2000px -2000px; // blank default state 
+        background-repeat: no-repeat;
+        @include background-size(368px 416px);
+        cursor: pointer;
+        @include opacity(0.3);
+        &.ui-icon-lightbulb { background-position:-222px -8px; }
+      }
+    }
+    * {
+      vertical-align: middle;
+    }
+    a {
+      padding: 2px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+  .slick-pager-settings-expanded {
+    font-size: 75%;
+    display: inline-block;
+    color: $gray;
+    margin-top: -6px;
+    line-height: 16px;
+    a {
+      padding: 0 5px;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Slick Column Picker
+.slick-columnpicker {
+  border: 1px solid #718BB7;
+  background: #f0f0f0;
+  padding: 6px;
+  -moz-box-shadow: 2px 2px 2px silver;
+  -webkit-box-shadow: 2px 2px 2px silver;
+  box-shadow: 2px 2px 2px silver;
+  min-width: 100px;
+  cursor: default;
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    background: none;
+    a {
+      display: block;
+      padding: 4px;
+      font-weight: bold;
+      &:hover {
+        background: white;
+      }
+    }
+  }
+  input {
+    margin: 4px;
+  }
+}

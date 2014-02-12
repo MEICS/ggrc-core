@@ -16,7 +16,7 @@ class ServiceDescription(MethodView):
   def get(self):
     from ggrc import services
     endpoints = {}
-    for entry in services.all_collections():
+    for entry in services.all_services():
       service = getattr(services, entry.model_class.__name__)
       endpoints[service.__name__] = {
           'href': service.url_for(),
