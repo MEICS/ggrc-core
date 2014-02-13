@@ -14,7 +14,8 @@ def with_static_subdomain_filter(path):
   import urlparse
   from flask import request
   from ggrc import settings
-  if not getattr(settings, 'APP_ENGINE', False):
+  if not getattr(settings, 'APP_ENGINE', False) \
+      or not getattr(settings, 'USE_APP_ENGINE_ASSETS_SUBDOMAIN', True):
     return path
   scheme, netloc, _, _, _ = urlparse.urlsplit(request.url_root)
   if not netloc.startswith('static-dot-'):
