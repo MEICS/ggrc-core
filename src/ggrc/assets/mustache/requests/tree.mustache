@@ -115,6 +115,9 @@
               {{#if_equals instance.status "Accepted"}}
                 <small class="accepted"><em>Accepted</em></small>
               {{/if_equals}}
+              {{#instance._undo.0}}
+                <a href="javascript://" data-name="status" data-value="{{instance._undo.0}}" data-undo="true" class="undo">Undo</a>
+              {{/instance._undo.0}}
             </div>
           </div>
         </div>

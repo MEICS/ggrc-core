@@ -50,15 +50,26 @@ GGRC.Controllers.Modals("GGRC.Controllers.QuickForm", {
       $(el).closest('.open').removeClass('open');
     }, 100);
   }
-  , "button click" : function(el, ev){
+  , "button,a.undo click" : function(el, ev){
     if(!el.data('name') || !el.data('value')){
       return;
     }
-    var that = this;
-    this.set_value({ name: el.data('name'), value: el.data('value') });
-    setTimeout(function() {
-      that.options.instance.save();
-    }, 100);
+    ev.stopPropagation();
+
+    var that = this
+      , name = el.data('name')
+      , old_value = this.options.instance.attr(name);
+
+    // Check if the undo button was clicked:
+    this.options.instance.attr('_undo') || that.options.instance.attr('_undo', []);
+    if(!el.data('undo')){
+      that.options.instance.attr('_undo').unshift(old_value);
+    }
+    else{
+      that.options.instance.attr('_undo').shift();
+    }
+    that.set_value({ name: el.data('name'), value: el.data('value') });
+    that.options.instance.save();
   }
 
 });
