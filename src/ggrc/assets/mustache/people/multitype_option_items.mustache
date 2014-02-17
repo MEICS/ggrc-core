@@ -19,15 +19,7 @@
                 </span>
                 {{#if mappings.length}}
                 {{#result_direct_mappings bindings_compute selected_object}}
-                <a class="mapped mapped-ext pull-right" data-popover-trigger="sticky-hover" data-sticky-popover="true" href="javascript://" target="_blank">
-                  <div class='popover-data-title'>
-                    <b>{{instance.title}}</b> {{instance.class.title_singular}} is mapped through:
-                  </div>
-                  <div class='popover-data-content'>
-                    {{{render '/static/mustache/selectors/multitype_option_mappings_popover.mustache' result=. parent_instance=selected_object}}}
-                  </div>
-                  Mapped ({{mappings_type}})
-                </a>
+                  <span class="pull-right">Mapped ({{mappings_type}})</span>
                 {{/result_direct_mappings}}
                 {{/if}}
               </div>
