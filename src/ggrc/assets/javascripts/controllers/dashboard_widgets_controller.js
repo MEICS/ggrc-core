@@ -147,6 +147,10 @@ CMS.Controllers.Filterable("CMS.Controllers.DashboardWidgets", {
   }
 
   , display: function() {
+      GGRC.Tracker_model_category  = this.options.model.category;
+      GGRC.Tracker_model_table     = this.options.model.table_singular;
+      GGRC.Tracker_start("Navigate to " + GGRC.Tracker_model_category + ":" + GGRC.Tracker_model_table, "Draw Widget"); 
+
       if (this._display_deferred)
         return this._display_deferred;
 
@@ -157,6 +161,8 @@ CMS.Controllers.Filterable("CMS.Controllers.DashboardWidgets", {
         else {
           return new $.Deferred().resolve();
         }
+      }).done(function() {
+        GGRC.Tracker_stop("Navigate to " + GGRC.Tracker_model_category + ":" + GGRC.Tracker_model_table, "Draw Widget"); 
       });
 
       return this._display_deferred;

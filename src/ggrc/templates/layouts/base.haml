@@ -44,6 +44,31 @@
     :javascript
       jQuery(function($) { $('head').append("<link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'></link>"); });
 
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','_gaTracker');
+
+     // Please modify Google analytics tracker ID starting with UA and host name 
+     // Uncomment _gaTracker to enable Google analytics tracker
+     // _gaTracker('create', 'UA-XXXX-X', 'Enter Hostname for tracking');
+     // _gaTracker('send', 'pageview');
+
+      GGRC.Tracker_pending_events={};
+
+      GGRC.Tracker_start = function(category, action) {
+       GGRC.Tracker_pending_events[category] = Date.now();
+      }
+
+      GGRC.Tracker_stop = function(category, action) {
+       // _gaTracker('send', 'event', category, action, 'elapsedTime', Date.now() - GGRC.Tracker_pending_events[category]);
+       delete GGRC.Tracker_pending_events[category];
+      }
+
+      GGRC.Tracker_once = function(category, action) {
+       _gaTracker('send', 'event', category, action, 'elapsedTime', Date.now()); 
+      }
+
     -#%link{ 'href': "http://fonts.googleapis.com/css?family=PT+Sans", :rel => "stylesheet", :type => "text/css" }
 
   -block body

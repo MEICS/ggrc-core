@@ -718,6 +718,8 @@ can.Control("CMS.Controllers.LHN_Search", {
     }
 
   , display_lists: function(search_result) {
+      // Todo(Dan): Need to add name of the collection to category
+      GGRC.Tracker_start("Expand LHN", "Display Collection");
       var self = this
         , lists = this.get_visible_lists()
         ;
@@ -741,6 +743,8 @@ can.Control("CMS.Controllers.LHN_Search", {
           self.options.visible_lists[model_name].replace(initial_visible_list);
           // Stop spinner when request is complete
           $list.find(self.options.spinner_selector).html("");
+          // Todo(Dan): Need to add name of the collection to category
+          GGRC.Tracker_stop("Expand LHN", "Display Collection");
         });
       });
     }

@@ -284,6 +284,9 @@ can.Control("CMS.Controllers.TreeView", {
   , display: function() {
       var that = this;
 
+      // Dan(Todo): Need to get the title for category argument
+      GGRC.Tracker_start("Tree View", "Display Mappings");
+
       if (this._display_deferred) {
         return this._display_deferred;
       }
@@ -293,6 +296,9 @@ can.Control("CMS.Controllers.TreeView", {
       this._display_deferred.then(function() {
         return $.when(that.fetch_list(), that.init_view())
           .then(that.proxy("draw_list"));
+      }).done(function() {
+        // Dan(Todo): Need to get the title for category argument
+        GGRC.Tracker_stop("Tree View", "Display Mappings");
       });
 
       return this._display_deferred;
